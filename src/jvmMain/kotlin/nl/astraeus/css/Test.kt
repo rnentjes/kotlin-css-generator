@@ -3,7 +3,7 @@ package nl.astraeus.css
 class StyleBase(
     val mainColor: Color = hsl(128, 50, 50),
     val mainBackgroundColor: Color = hsl(64, 50, 50),
-    val mainFont: PlainProperty = plain("Arial")
+    val mainFont: TextProperty = text("Arial")
 )
 
 private fun StyleDefinition.sizePX(
@@ -64,9 +64,26 @@ fun main() {
     val css2 = generateCss(StyleBase(
         hsl(32, 40, 50),
         hsl(64, 60, 35),
-        plain("Courier")
+        text("Courier")
     ))
 
     println(css1)
     println(css2)
+
+    val sd = css {
+        css("#pipo") {
+            backgroundColor = hex("eeeeee")
+            fontFamily = text("Arial, Courier")
+            animationDelay = initial()
+
+            css("div") {
+                color = hex("1b1b1b1")
+                alignContent = AlignContent.FLEX_START
+                animationIterationCount = Count.count(3)
+            }
+        }
+    }
+
+    println("======")
+    println(sd.generateCss())
 }

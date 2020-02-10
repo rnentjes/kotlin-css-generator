@@ -1,10 +1,10 @@
 package nl.astraeus.css
 
-import kotlin.test.Test
+//import kotlin.test.Test
 
 object TestCssBuilder {
 
-    @Test
+    //@Test
     fun testBuilder() {
         val css = CssBuilder()
 
@@ -15,7 +15,7 @@ object TestCssBuilder {
                 left = em(5)
                 backgroundColor = rgba(255, 255, 255, 0.75)
 
-                sel("> a") {
+                css("> a") {
                     color = hsl(200, 50, 50)
                 }
             }

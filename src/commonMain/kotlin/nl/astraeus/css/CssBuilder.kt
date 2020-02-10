@@ -5,25 +5,49 @@ annotation class CssTagMarker
 
 @CssTagMarker
 open class Style(
-    var color: Color? = null,
+    var alignContent: AlignContent? = null,
+    var alignItems: AlignItems? = null,
+    var alignSelf: AlignSelf? = null,
+    var all: All? = null,
+    var animation: TextProperty? = null,
+    var animationDelay: DelayDuration? = null,
+    var animationDirection: AnimationDirection? = null,
+    var animationDuration: DelayDuration? = null,
+    var animationFillMode: AnimationFillMode? = null,
+    var animationIterationCount: Count? = null,
     var backgroundColor: Color? = null,
+    var color: Color? = null,
+    var fontFamily: TextProperty? = null,
+    var fontSize: FontSize? = null,
+    var height: Measurement? = null,
     var left: Measurement? = null,
     var top: Measurement? = null,
-    var width: Measurement? = null,
-    var height: Measurement? = null,
-    var fontFamily: PlainProperty? = null,
-    var fontSize: FontSize? = null
+    var transitionDelay: DelayDuration? = null,
+    var transitionDuration: DelayDuration? = null,
+    var width: Measurement? = null
 ) {
 
     fun getMapping() = mapOf(
-        "color" to color,
+        "align-content" to alignContent,
+        "align-items" to alignItems,
+        "align-self" to alignSelf,
+        "all" to all,
+        "animation" to animation,
+        "animation-delay" to animationDelay,
+        "animation-direction" to animationDirection,
+        "animation-duration" to animationDuration,
+        "animation-fill-mode" to animationFillMode,
+        "animation-iteration-count" to animationIterationCount,
         "background-color" to backgroundColor,
+        "color" to color,
+        "font-family" to fontFamily,
+        "font-size" to fontSize,
+        "height" to height,
         "left" to left,
         "top" to top,
-        "width" to width,
-        "height" to height,
-        "font-family" to fontFamily,
-        "font-size" to fontSize
+        "transition-delay" to transitionDelay,
+        "transition-duration" to transitionDuration,
+        "width" to width
     )
 
     fun propertyCss(indent: String, name: String, prop: CssProperty?): String = if (prop != null) {
@@ -85,8 +109,8 @@ open class StyleDefinition : Style() {
 
 }
 
-fun css(definition: Style.() -> Unit): Style {
-    val css = Style()
+fun css(definition: StyleDefinition.() -> Unit): StyleDefinition {
+    val css = StyleDefinition()
 
     definition(css)
 

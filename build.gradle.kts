@@ -10,6 +10,8 @@ repositories {
     mavenCentral()
 }
 
+apply(plugin = "kotlin-dce-js")
+
 kotlin {
     /* Targets configuration omitted. 
     *  To find out how to configure the targets, please follow the link:
@@ -27,7 +29,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                //implementation(kotlin("test-annotations-common"))
             }
         }
         val jsMain by getting {
@@ -38,7 +40,7 @@ kotlin {
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
-                implementation(kotlin("test-annotations-js"))
+                //implementation(kotlin("test-annotations-js"))
             }
         }
         val jvmMain by getting {

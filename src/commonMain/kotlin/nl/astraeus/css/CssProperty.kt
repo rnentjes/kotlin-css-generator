@@ -1,16 +1,16 @@
 package nl.astraeus.css
 
-abstract class CssProperty {
+interface CssProperty {
 
-    abstract fun css(): String
+    fun css(): String
 
 }
 
-fun plain(value: String) = PlainProperty(value)
+fun text(value: String) = TextProperty(value)
 
-class PlainProperty(
+class TextProperty(
     val value: String
-): CssProperty() {
+): CssProperty {
 
     override fun css(): String = value
 

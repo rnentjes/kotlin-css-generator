@@ -1,13 +1,22 @@
 package nl.astraeus.css
 
+fun hex(hex: String): Color = HexColor(hex)
 fun rgb(red: Int, green: Int, blue: Int): Color = RGBColor(red, green, blue)
 fun rgba(red: Int, green: Int, blue: Int, alpha: Double): Color = RGBAColor(red, green, blue, alpha)
 fun hsl(hue: Int, saturation: Int, lightness: Int): Color = HSLColor(hue, saturation, lightness)
 fun hsla(hue: Int, saturation: Int, lightness: Int, alpha: Double): Color = HSLAColor(hue, saturation, lightness, alpha)
 
-open class Color : CssProperty() {
+open class Color : CssProperty {
 
     override fun css(): String = "#xxxxxx"
+
+}
+
+class HexColor(
+    val hex: String
+) : Color() {
+
+    override fun css(): String = "#$hex"
 
 }
 

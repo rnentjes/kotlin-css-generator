@@ -3,11 +3,13 @@ package nl.astraeus.css
 fun px(nr: Int): Measurement = Measurement(MeasurementType.PX, nr)
 fun em(nr: Int): Measurement = Measurement(MeasurementType.EM, nr)
 fun perc(nr: Int): Measurement = Measurement(MeasurementType.PERCENTAGE, nr)
+fun pc(nr: Int): Measurement = Measurement(MeasurementType.PICAS, nr)
 
 enum class MeasurementType {
     PX,
     EM,
     PERCENTAGE,
+    PICAS,
     OTHER
 }
 
@@ -15,7 +17,7 @@ open class Measurement(
     val type: MeasurementType,
     val intValue: Int = 0,
     val stringValue: String = ""
-) : CssProperty() {
+) : CssProperty {
 
     override fun css(): String = when(type) {
         MeasurementType.PX -> {
@@ -26,6 +28,9 @@ open class Measurement(
         }
         MeasurementType.PERCENTAGE -> {
             "${stringValue}%"
+        }
+        MeasurementType.PICAS -> {
+            "${stringValue}pc"
         }
         else -> {
             error("Unhandled type $type")
@@ -38,7 +43,6 @@ enum class FontSizeType {
     PX,
     EM,
     PERCENTAGE,
-
 }
 
 class FontSize(
