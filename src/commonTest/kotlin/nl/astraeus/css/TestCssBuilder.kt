@@ -1,5 +1,10 @@
 package nl.astraeus.css
 
+import nl.astraeus.css.properties.Color.Companion.hsl
+import nl.astraeus.css.properties.Color.Companion.rgba
+import nl.astraeus.css.properties.Measurement.Companion.em
+import nl.astraeus.css.properties.Measurement.Companion.px
+
 //import kotlin.test.Test
 
 object TestCssBuilder {

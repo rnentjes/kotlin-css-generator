@@ -1,7 +1,8 @@
 package nl.astraeus.css
 
 import nl.astraeus.css.properties.*
-import nl.astraeus.css.properties.AlignContent.Companion.flexStart
+import nl.astraeus.css.properties.Measurement.Companion.em
+import nl.astraeus.css.properties.Measurement.Companion.px
 import nl.astraeus.css.style.StyleDefinition
 
 class StyleBase(
@@ -16,10 +17,10 @@ private fun StyleDefinition.sizePX(
     width: Int,
     height: Int
 ) {
-    this@sizePX.top = Measurement.px(top)
-    this@sizePX.left = Measurement.px(left)
-    this@sizePX.width = Measurement.px(width)
-    this@sizePX.height = Measurement.px(height)
+    this@sizePX.top = px(top)
+    this@sizePX.left = px(left)
+    this@sizePX.width = px(width)
+    this@sizePX.height = px(height)
 }
 
 private fun generateCss(
@@ -32,11 +33,12 @@ private fun generateCss(
             fontFamily = base.mainFont
             color = base.mainColor
             backgroundColor = base.mainBackgroundColor
+            alignContent = AlignContent.initial()
         }
 
         css(".test") {
-            top = Measurement.px(10)
-            left = Measurement.em(5)
+            top = px(10)
+            left = em(5)
             backgroundColor = Color.rgba(255, 255, 255, 0.75)
 
             css("> a") {
@@ -53,10 +55,9 @@ private fun generateCss(
                 sizePX(25, 25, 200, 200)
 
                 css("a") {
-                    width = Measurement.px(725)
+                    width = px(725)
                     background = text("")
                     backgroundColor = base.mainBackgroundColor
-                    all = All.initial()
                 }
             }
         }
@@ -84,7 +85,7 @@ fun main() {
 
             css("div") {
                 color = Color.hex("1b1b1b1")
-                alignContent = flexStart()
+                alignContent = AlignContent.flexStart()
                 animationName = listOf(text("foo"), text("bar"))
                 animationIterationCount = listOf(
                     Count.count(3), Count.infinite())

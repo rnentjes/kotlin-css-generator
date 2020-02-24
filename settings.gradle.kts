@@ -8,4 +8,3 @@ pluginManagement {
     }
 }
 rootProject.name = "kotlin-css-generator"
-
