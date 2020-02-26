@@ -31,49 +31,9 @@ class BackgroundBlendMode(
     }
 }
 
-class BackgroundClip(
-    value: String
-) : CssProperty(value) {
-
-    companion object {
-        fun borderBox() = BackgroundClip("border-box")
-        fun paddingBox() = BackgroundClip("padding-box")
-        fun contentBox() = BackgroundClip("content-box")
-        fun initial() = BackgroundClip("initial")
-        fun inherit() = BackgroundClip("inherit")
-
-    }
-}
-
-class BackgroundOrigin(
-    value: String
-) : CssProperty(value) {
-
-    companion object {
-        fun borderBox() = BackgroundOrigin("border-box")
-        fun paddingBox() = BackgroundOrigin("padding-box")
-        fun contentBox() = BackgroundOrigin("content-box")
-        fun initial() = BackgroundOrigin("initial")
-        fun inherit() = BackgroundOrigin("inherit")
-
-    }
-}
-
 class BackgroundPosition(
     value: String
 ) : CssProperty(value) {
-
-    override fun validateMultiple(props: List<*>) {
-        for (prop in props) {
-            if (prop is CssProperty) {
-                if (prop.css() == "initial" || prop.css() == "inherit") {
-                    check(props.size == 1) {
-                        "'background-position' can only have single value when 'initial' or 'inherit'"
-                    }
-                }
-            }
-        }
-    }
 
     companion object {
         fun left() = BackgroundPosition("left")
@@ -105,12 +65,6 @@ class BackgroundRepeat(
 class BackgroundSize(
     value: String
 ) : CssProperty(value) {
-
-    override fun validateMultiple(props: List<*>) {
-        check(props.size <= 2) {
-            "'background-size' can not have more than 2 values"
-        }
-    }
 
     companion object {
         fun px(px: Int) = BackgroundSize("${px}px")

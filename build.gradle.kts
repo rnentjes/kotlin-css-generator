@@ -24,6 +24,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
+
+                implementation("io.github.microutils:kotlin-logging-common:1.7.8")
             }
         }
         val commonTest by getting {
@@ -35,6 +37,8 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js"))
+
+                implementation("io.github.microutils:kotlin-logging-js:1.7.8")
             }
         }
         val jsTest by getting {
@@ -46,6 +50,10 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
+
+                implementation("org.slf4j:slf4j-api:1.7.29")
+                implementation("org.slf4j:slf4j-simple:1.7.29")
+                implementation("io.github.microutils:kotlin-logging:1.7.8")
             }
         }
     }

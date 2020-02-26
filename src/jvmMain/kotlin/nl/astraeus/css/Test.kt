@@ -54,7 +54,7 @@ private fun generateCss(
 
                 css("a") {
                     width = Measurement.px(725)
-                    background = text("")
+                    background = text("red initial")
                     backgroundColor = base.mainBackgroundColor
                     all = All.initial()
                 }
@@ -89,10 +89,19 @@ fun main() {
                 animationIterationCount = listOf(
                     Count.count(3), Count.infinite())
                 animationTimingFunction = listOf(AnimationTimingFunction.cubicBezier(0.1, 0.2, 0.3, 0.4), AnimationTimingFunction.easeInOut())
+                borderRadius = listOf(
+                    BorderRadius.px(4),
+                    BorderRadius.px(5),
+                    BorderRadius.px(6),
+                    BorderRadius.px(7),
+                    BorderRadius.px(8)
+                )
             }
         }
     }
 
     println("======")
     println(sd.generateCss())
+    println("======")
+    println(sd.generateCss(minified = true))
 }

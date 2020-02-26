@@ -4,21 +4,6 @@ class BorderRadius(
     value: String
 ): CssProperty(value) {
 
-    override fun validateMultiple(props: List<*>) {
-        check(props.size <= 2) {
-            "'background-size' can not have more than 2 values"
-        }
-        for (prop in props) {
-            if (prop is CssProperty) {
-                if (prop.css() == "initial" || prop.css() == "inherit") {
-                    check(props.size == 1) {
-                        "'border-radius' can only have single value when 'initial' or 'inherit'"
-                    }
-                }
-            }
-        }
-    }
-
     companion object {
         fun px(nr: Int) = BorderRadius("${nr}px")
         fun em(nr: Int) = BorderRadius("${nr}em")
@@ -75,5 +60,15 @@ class BorderWidth(
 
         fun initial() = BorderWidth("initial")
         fun inherit() = BorderWidth("inherit")
+    }
+}
+
+class BorderCollapse(
+    value: String
+): CssProperty(value) {
+
+    companion object {
+        fun separate() = BorderWidth("separate")
+        fun collapse() = BorderWidth("collapse")
     }
 }

@@ -1,6 +1,7 @@
 package nl.astraeus.css.style
 
 import nl.astraeus.css.properties.*
+import nl.astraeus.logging.log
 
 @DslMarker
 annotation class CssTagMarker
@@ -25,21 +26,24 @@ open class Style(
     var background: TextProperty? = null,
     var backgroundAttachment: BackgroundAttachment? = null,
     var backgroundBlendMode: BackgroundBlendMode? = null,
-    var backgroundClip: BackgroundClip? = null,
+    var backgroundClip: ClipOrigin? = null,
     var backgroundColor: Color? = null,
     var backgroundImage: Image? = null,
-    var backgroundOrigin: BackgroundOrigin? = null,
+    var backgroundOrigin: ClipOrigin? = null,
     var backgroundPosition: List<BackgroundPosition>? = null,
     var backgroundRepeat: List<BackgroundRepeat>? = null,
     var backgroundSize: List<BackgroundSize>? = null,
     var border: TextProperty? = null,
     var borderBottom: TextProperty? = null,
-    var borderColor: Color? = null,
     var borderBottomColor: Color? = null,
     var borderBottomLeftRadius: List<BorderRadius>? = null,
     var borderBottomRightRadius: List<BorderRadius>? = null,
     var borderBottomStyle: BorderStyle? = null,
     var borderBottomWidth: BorderWidth? = null,
+    var borderCollapse: BorderCollapse? = null,
+    var borderColor: List<Color>? = null,
+    var borderImage: TextProperty? = null,
+    var borderImageOutset: Length? = null,
     var borderLeft: TextProperty? = null,
     var borderLeftColor: Color? = null,
     var borderRadius: List<BorderRadius>? = null,
@@ -57,8 +61,17 @@ open class Style(
     var transitionDuration: DelayDuration? = null,
     var width: Measurement? = null
 ) {
+    private val validators = mapOf<String, List<Validator>>(
+        "background-position" to listOf(InitialInheritSingleValue()),
+        "background-size" to listOf(MaxCountValidator(2)),
+        "border-radius" to listOf(
+            MaxCountValidator(4),
+            InitialInheritSingleValue()
+        ),
+        "animation-timing-function" to listOf(MaxCountValidator(4))
+    )
 
-    fun getMapping() = mapOf(
+    fun getMapping(): Map<String, Any?> = mapOf(
         "align-content" to alignContent,
         "align-items" to alignItems,
         "align-self" to alignSelf,
@@ -89,9 +102,15 @@ open class Style(
         "border-bottom-color" to borderBottomColor,
         "border-bottom-left-radius" to borderBottomLeftRadius,
         "border-bottom-right-radius" to borderBottomRightRadius,
+        "border-bottom-style" to borderBottomStyle,
+        "border-bottom-width" to borderBottomWidth,
+        "border-collapse" to borderCollapse,
         "border-color" to borderColor,
+        "border-image" to borderImage,
+        "border-image-outset" to borderImageOutset,
         "border-left" to borderLeft,
         "border-left-color" to borderLeftColor,
+        "border-radius" to borderRadius,
         "border-right" to borderRight,
         "border-right-color" to borderRightColor,
         "border-top" to borderTop,
@@ -107,38 +126,75 @@ open class Style(
         "width" to width
     )
 
-    fun propertyCss(indent: String, name: String, prop: CssProperty): String {
-        prop.validate()
+    fun propertyCss(indent: String, name: String, prop: CssProperty, minified: Boolean): String {
+        validators[name]?.forEach {
+            if (!it.validate(prop)) {
+                log.warn { "Validate error '$name' - ${it.getMessage(name)}" }
+            }
+        }
 
-        return "$indent$name: ${prop.css()};\n"
+        return if (!minified) {
+            val paddedName = StringBuilder()
+            paddedName.append(indent)
+            paddedName.append(name)
+            paddedName.append(":")
+            while(paddedName.length < 32) {
+                paddedName.append(' ')
+            }
+            "$paddedName${prop.css()};\n"
+        } else {
+            "$name:${prop.css()};"
+        }
     }
 
-    fun propertyCss(indent: String, name: String, props: List<*>): String {
+    fun propertyCss(indent: String, name: String, props: List<*>, minified: Boolean): String {
         val builder = StringBuilder()
+
+        validators[name]?.forEach {
+            if (!it.validate(props as List<CssProperty>)) {
+                log.warn { "Validate error '$name' - ${it.getListMessage(name)}"  }
+            }
+        }
 
         for ((index, prop) in props.withIndex()) {
             if (prop is CssProperty) {
-                if (index == 0) {
-                    prop.validateMultiple(props)
+                validators[name]?.forEach {
+                    if (!it.validate(prop)) {
+                        log.warn { "Validate error '$name' - ${it.getMessage(name)}" }
+                    }
                 }
                 if (builder.isNotEmpty()) {
-                    builder.append(", ")
+                    builder.append(",")
+                    if (!minified) {
+                        builder.append(" ")
+                    }
                 }
                 builder.append(prop.css())
             }
         }
 
-        return "$indent$name: $builder;\n"
+        return if (!minified) {
+            val paddedName = StringBuilder()
+            paddedName.append(indent)
+            paddedName.append(name)
+            paddedName.append(":")
+            while(paddedName.length < 32) {
+                paddedName.append(' ')
+            }
+            "$paddedName$builder;\n"
+        } else {
+            "$name:$builder;"
+        }
     }
 
-    fun generatePropertyCss(indent: String): String {
+    fun generatePropertyCss(indent: String, minified: Boolean): String {
         val builder = StringBuilder()
 
         for ((name, prop) in getMapping()) {
             if (prop is List<*> && prop.isNotEmpty()) {
-                builder.append(propertyCss(indent, name, prop))
+                builder.append(propertyCss(indent, name, prop, minified))
             } else if (prop is CssProperty) {
-                builder.append(propertyCss(indent, name, prop))
+                builder.append(propertyCss(indent, name, prop, minified))
             }
         }
 

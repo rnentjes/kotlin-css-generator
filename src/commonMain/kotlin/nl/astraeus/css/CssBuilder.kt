@@ -18,7 +18,7 @@ class CssBuilder {
         definition(this.definition)
     }
 
-    fun getCss(): String = definition.generateCss()
+    fun getCss(minified: Boolean = false): String = definition.generateCss(minified = minified)
 
     override fun toString(): String {
         return "CssBuilder(${definition.generateCss()})"

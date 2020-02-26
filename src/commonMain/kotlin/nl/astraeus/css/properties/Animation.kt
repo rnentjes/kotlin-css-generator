@@ -69,7 +69,7 @@ class AnimationTimingFunction(
             n2: Double,
             n3: Double,
             n4: Double
-        ) = AnimationTimingFunction("cubic-bezier($n1, $n2, $n3, $n4)")
+        ) = AnimationTimingFunction("cubic-bezier($n1,$n2,$n3,$n4)")
         fun initial() = AnimationTimingFunction("initial")
         fun inherit() = AnimationTimingFunction("inherit")
 
