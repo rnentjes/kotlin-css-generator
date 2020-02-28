@@ -5,6 +5,7 @@ class Color(
 ) : CssProperty(value) {
 
     companion object {
+        fun auto() = Color("auto")
         fun transparant() = Color("transparant")
         fun initial() = Color("initial")
         fun inherit() = Color("inherit")

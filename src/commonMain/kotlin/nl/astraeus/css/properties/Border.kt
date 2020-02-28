@@ -72,3 +72,37 @@ class BorderCollapse(
         fun collapse() = BorderWidth("collapse")
     }
 }
+
+class BorderImageWidth (
+    value: String
+): CssProperty(value) {
+
+    companion object {
+        fun px(nr: Int) = BorderRadius("${nr}px")
+        fun nr(nr: Int) = Image("$nr")
+        fun perc(nr: Int) = BorderRadius("${nr}%")
+        fun perc(nr: Double) = BorderRadius("${nr}%")
+        fun auto() = BorderWidth("auto")
+        fun initial() = BorderWidth("initial")
+        fun inherit() = BorderWidth("inherit")
+    }
+}
+
+class BorderSpacing(
+    value: String
+): CssProperty(value) {
+
+    companion object {
+        fun px(nr: Int) = BorderRadius("${nr}px")
+        fun em(nr: Int) = BorderRadius("${nr}em")
+        fun em(nr: Double) = BorderRadius("${nr}em")
+        fun perc(nr: Int) = BorderRadius("${nr}%")
+        fun perc(nr: Double) = BorderRadius("${nr}%")
+        fun pc(nr: Int) = BorderRadius("${nr}pc")
+        fun pc(nr: Double) = BorderRadius("${nr}pc")
+        fun cm(nr: Int) = BorderRadius("${nr}cm")
+        fun cm(nr: Double) = BorderRadius("${nr}cm")
+        fun initial() = BorderRadius("initial")
+        fun inherit() = BorderRadius("inherit")
+    }
+}

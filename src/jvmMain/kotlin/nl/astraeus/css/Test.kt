@@ -85,10 +85,18 @@ fun main() {
             css("div") {
                 color = Color.hex("1b1b1b1")
                 alignContent = flexStart()
-                animationName = listOf(text("foo"), text("bar"))
+                animationName = listOf(
+                    text("foo"),
+                    text("bar")
+                )
                 animationIterationCount = listOf(
-                    Count.count(3), Count.infinite())
-                animationTimingFunction = listOf(AnimationTimingFunction.cubicBezier(0.1, 0.2, 0.3, 0.4), AnimationTimingFunction.easeInOut())
+                    Count.count(3),
+                    Count.infinite()
+                )
+                animationTimingFunction = listOf(
+                    AnimationTimingFunction.cubicBezier(0.1, 0.2, 0.3, 0.4),
+                    AnimationTimingFunction.easeInOut()
+                )
                 borderRadius = listOf(
                     BorderRadius.px(4),
                     BorderRadius.px(5),
