@@ -3,7 +3,7 @@ package nl.astraeus.css
 import nl.astraeus.css.properties.*
 import nl.astraeus.css.properties.Measurement.Companion.em
 import nl.astraeus.css.properties.Measurement.Companion.px
-import nl.astraeus.css.style.StyleDefinition
+import nl.astraeus.css.style.Style
 
 class StyleBase(
     val mainColor: Color = Color.hsl(128, 50, 50),
@@ -11,7 +11,7 @@ class StyleBase(
     val mainFont: TextProperty = text("Arial")
 )
 
-private fun StyleDefinition.sizePX(
+private fun Style.sizePX(
     left: Int,
     top: Int,
     width: Int,
@@ -77,7 +77,7 @@ fun main() {
     println(css1)
     println(css2)
 
-    val sd = css {
+    val sd = style {
         select("#pipo") {
             backgroundColor = Color.hex("eeeeee")
             fontFamily = text("Arial, Courier")
