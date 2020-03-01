@@ -234,6 +234,12 @@ open class Style(
     var emptyCells: EmptyCells? = null,
     var filter: TextProperty? = null,
     var flex: TextProperty? = null,
+    var flexBasis: Measurement? = null,
+    var flexDirection: FlexDirection? = null,
+    var flexFlow: TextProperty? = null,
+    var flexGrow: FlexGrowShrink? = null,
+    var flexShrink: FlexGrowShrink? = null,
+    var flexWrap: FlexWrap? = null,
     var float: Float? = null,
     var font: TextProperty? = null,
 
