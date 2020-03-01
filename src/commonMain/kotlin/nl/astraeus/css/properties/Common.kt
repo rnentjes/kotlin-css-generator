@@ -20,17 +20,14 @@ class Length(
 
 }
 
-class ClipOrigin(
+class Fill(
     value: String
 ) : CssProperty(value) {
 
     companion object {
-        fun borderBox() = ClipOrigin("border-box")
-        fun paddingBox() = ClipOrigin("padding-box")
-        fun contentBox() = ClipOrigin("content-box")
-        fun initial() = ClipOrigin("initial")
-        fun inherit() = ClipOrigin("inherit")
-
+        fun balance() = Fill("balance")
+        fun auto() = Fill("auto")
+        fun initial() = Fill("initial")
+        fun inherit() = Fill("inherit")
     }
 }
-

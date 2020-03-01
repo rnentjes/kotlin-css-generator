@@ -1,20 +1,23 @@
 package nl.astraeus.css
 
-import nl.astraeus.css.style.StyleDefinition
+import nl.astraeus.css.style.Css
+import nl.astraeus.css.style.Style
 
-fun css(definition: StyleDefinition.() -> Unit): StyleDefinition {
-    val css = StyleDefinition()
+fun css(definition: Css) = definition
+
+fun style(definition: Css): Style {
+    val css = Style()
 
     definition(css)
 
     return css
 }
 
-class CssBuilder {
-    var definition: StyleDefinition =
-        StyleDefinition()
 
-    fun style(definition: StyleDefinition.() -> Unit) {
+class CssBuilder {
+    var definition: Style = Style()
+
+    fun style(definition: Style.() -> Unit) {
         definition(this.definition)
     }
 

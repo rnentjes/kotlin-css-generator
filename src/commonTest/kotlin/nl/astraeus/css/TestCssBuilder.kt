@@ -15,12 +15,12 @@ object TestCssBuilder {
 
         css.style {
 
-            css(".test") {
+            select(".test") {
                 top = px(10)
                 left = em(5)
                 backgroundColor = rgba(255, 255, 255, 0.75)
 
-                css("> a") {
+                select("> a") {
                     color = hsl(200, 50, 50)
                 }
             }

@@ -7,6 +7,8 @@ class  Count(
     companion object {
         fun count(number: Int): Count =
             Count("$number")
+        fun auto(): Count =
+            Count("auto")
         fun infinite(): Count =
             Count("infinite")
         fun initial(): Count =

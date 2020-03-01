@@ -29,32 +29,32 @@ private fun generateCss(
     val css = CssBuilder()
 
     css.style {
-        css("body") {
+        select("body") {
             fontFamily = base.mainFont
             color = base.mainColor
             backgroundColor = base.mainBackgroundColor
             alignContent = AlignContent.initial()
         }
 
-        css(".test") {
+        select(".test") {
             top = px(10)
             left = em(5)
             backgroundColor = Color.rgba(255, 255, 255, 0.75)
 
-            css("> a") {
+            select("> a") {
                 color = Color.hsl(200, 50, 50)
             }
         }
 
-        css("nav") {
-            css("ul") {
+        select("nav") {
+            select("ul") {
                 color = Color.hsl(0, 100, 25)
                 backgroundColor = base.mainBackgroundColor
             }
-            css("li") {
+            select("li") {
                 sizePX(25, 25, 200, 200)
 
-                css("a") {
+                select("a") {
                     width = px(725)
                     background = text("")
                     backgroundColor = base.mainBackgroundColor
@@ -78,12 +78,12 @@ fun main() {
     println(css2)
 
     val sd = css {
-        css("#pipo") {
+        select("#pipo") {
             backgroundColor = Color.hex("eeeeee")
             fontFamily = text("Arial, Courier")
             animationDelay = listOf(DelayDuration.initial())
 
-            css("div") {
+            select("div") {
                 color = Color.hex("1b1b1b1")
                 alignContent = AlignContent.flexStart()
                 animationName = listOf(text("foo"), text("bar"))
