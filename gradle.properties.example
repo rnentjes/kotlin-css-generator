@@ -1,0 +1,5 @@
+kotlin.code.style=official
+kotlin.js.compiler=both
+
+nexusUsername=deployment
+nexusPassword=3p7pl4aenHNFqUhYBaRIlqH6lk
