@@ -2,15 +2,15 @@ package nl.astraeus.css.style
 
 @CssTagMarker
 open class KeyFrames : CssGenerator() {
-    val frames: MutableMap<Int, Css> = mutableMapOf()
+  val frames: MutableMap<Int, Css> = mutableMapOf()
 
-    override fun getValidator(name: String): List<Validator>? = listOf()
+  override fun getValidator(name: String): List<Validator>? = listOf()
 
-    fun percentage(percentage: Int, style: Css) {
-        val css = Style()
+  fun percentage(percentage: Int, style: Css) {
+    val css = Style()
 
-        style(css)
+    style(css)
 
-        frames[percentage] = style
-    }
+    frames[percentage] = style
+  }
 }
