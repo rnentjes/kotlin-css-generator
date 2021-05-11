@@ -5,18 +5,19 @@ class Content(
 ) : CssProperty(value) {
 
     companion object {
-        fun normal() = Content("normal")
-        fun none() = Content("none")
-        fun counter() = Content("counter")
+        val normal = Content("normal")
+        val none = Content("none")
+        val counter = Content("counter")
+        val openQuote = Content("open-quote")
+        val closeQuote = Content("close-quote")
+        val noOpenQuote = Content("no-open-quote")
+        val noCloseQuote = Content("no-close-quote")
+        val initial = Content("initial")
+        val inherit = Content("inherit")
+
         fun attr(attribute: String) = Content("attr($attribute)")
         fun string(txt: String) = Content("\"$txt\"")
-        fun openQuote() = Content("open-quote")
-        fun closeQuote() = Content("close-quote")
-        fun noOpenQuote() = Content("no-open-quote")
-        fun noCloseQuote() = Content("no-close-quote")
         fun url(url: String) = Content("url($url)")
-        fun initial() = Content("initial")
-        fun inherit() = Content("inherit")
     }
 
 }

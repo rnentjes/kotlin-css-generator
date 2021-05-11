@@ -5,15 +5,11 @@ class  Count(
 ) : CssProperty(value) {
 
     companion object {
-        fun count(number: Int): Count =
-            Count("$number")
-        fun auto(): Count =
-            Count("auto")
-        fun infinite(): Count =
-            Count("infinite")
-        fun initial(): Count =
-            Count("initial")
-        fun inherit(): Count =
-            Count("inherit")
+        val auto: Count = Count("auto")
+        val infinite: Count = Count("infinite")
+        val initial: Count = Count("initial")
+        val inherit: Count = Count("inherit")
+
+        fun count(number: Int): Count = Count("$number")
     }
 }

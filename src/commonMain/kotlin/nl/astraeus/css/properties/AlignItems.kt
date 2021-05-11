@@ -2,16 +2,16 @@ package nl.astraeus.css.properties
 
 class AlignItems(
     value: String
-) : CssProperty(value) {
+): CssProperty(value) {
 
     companion object {
-        fun stretch() = AlignItems("stretch")
-        fun center() = AlignItems("center")
-        fun flexStart() = AlignItems("flex-start")
-        fun flexEnd() = AlignItems("flex-end")
-        fun baseline() = AlignItems("baseline")
-        fun initial() = AlignItems("initial")
-        fun inherit() = AlignItems("inherit")
+        val stretch = AlignItems("stretch")
+        val center = AlignItems("center")
+        val flexStart = AlignItems("flex-start")
+        val flexEnd = AlignItems("flex-end")
+        val baseline = AlignItems("baseline")
+        val initial = AlignItems("initial")
+        val inherit = AlignItems("inherit")
     }
 
 }

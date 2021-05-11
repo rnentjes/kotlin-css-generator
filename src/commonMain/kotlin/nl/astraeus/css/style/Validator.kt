@@ -4,13 +4,9 @@ import nl.astraeus.css.properties.CssProperty
 
 abstract class Validator {
 
-    open fun validate(property: CssProperty): Boolean = true
-
     open fun validate(properties: List<CssProperty>): Boolean = true
 
     open fun getMessage(name: String): String = "'$name' validation message not defined for $this"
-
-    open fun getListMessage(name: String): String = "'$name' validation message not defined for $this"
 
 }
 
@@ -20,7 +16,7 @@ class MaxCountValidator(
 
     override fun validate(property: List<CssProperty>): Boolean = property.size <= number
 
-    override fun getListMessage(name: String): String = "'$name' should not have more than 4 entries"
+    override fun getMessage(name: String): String = "'$name' should not have more than 4 entries"
 
 }
 
@@ -36,6 +32,6 @@ class InitialInheritSingleValue: Validator() {
         return true
     }
 
-    override fun getListMessage(name: String): String = "'$name' can only have single value when 'initial' or 'inherit'"
+    override fun getMessage(name: String): String = "'$name' can only have single value when 'initial' or 'inherit'"
 
 }

@@ -5,10 +5,10 @@ class Direction(
 ) : CssProperty(value) {
 
     companion object {
-        fun ltr() = Direction("ltr")
-        fun rtl() = Direction("rtl")
-        fun initial() = Direction("initial")
-        fun inherit() = Direction("inherit")
+        val ltr = Direction("ltr")
+        val rtl = Direction("rtl")
+        val initial = Direction("initial")
+        val inherit = Direction("inherit")
     }
 
 }

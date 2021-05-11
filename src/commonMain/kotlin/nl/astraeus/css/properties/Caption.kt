@@ -5,10 +5,10 @@ class CaptionSide(
 ): CssProperty(value) {
 
     companion object {
-        fun top() = BoxSizing("top")
-        fun bottom() = BoxSizing("bottom")
-        fun initial() = BoxShadow("initial")
-        fun inherit() = BoxShadow("inherit")
+        val top = CaptionSide("top")
+        val bottom = CaptionSide("bottom")
+        val initial = CaptionSide("initial")
+        val inherit = CaptionSide("inherit")
     }
 
 }

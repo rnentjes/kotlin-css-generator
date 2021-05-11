@@ -5,10 +5,11 @@ class Image(
 ) : CssProperty(value) {
 
     companion object {
+        val none = Image("none")
+        val initial = Image("initial")
+        val inherit = Image("inherit")
+
         fun url(url: String) = Image("url($url)")
-        fun none() = Image("none")
-        fun initial() = Image("initial")
-        fun inherit() = Image("inherit")
     }
 }
 
@@ -17,11 +18,12 @@ class ImageRepeat(
 ) : CssProperty(value) {
 
     companion object {
-        fun stretch(url: String) = Image("stretch")
-        fun repeat() = Image("repeat")
-        fun round() = Image("round")
-        fun initial() = Image("initial")
-        fun inherit() = Image("inherit")
+        val repeat = ImageRepeat("repeat")
+        val round = ImageRepeat("round")
+        val initial = ImageRepeat("initial")
+        val inherit = ImageRepeat("inherit")
+
+        fun stretch(url: String) = ImageRepeat("stretch")
     }
 
 }
@@ -31,14 +33,15 @@ class ImageSlice(
 ) : CssProperty(value) {
 
     companion object {
-        fun nr(nr: Int) = Image("$nr")
-        fun perc(perc: Int) = Image("$perc%")
-        fun perc(perc: Double) = Image("$perc%")
-        fun stretch(url: String) = Image("stretch")
-        fun repeat() = Image("repeat")
-        fun fill() = Image("fill")
-        fun initial() = Image("initial")
-        fun inherit() = Image("inherit")
+        val repeat = ImageSlice("repeat")
+        val fill = ImageSlice("fill")
+        val initial = ImageSlice("initial")
+        val inherit = ImageSlice("inherit")
+
+        fun nr(nr: Int) = ImageSlice("$nr")
+        fun perc(perc: Int) = ImageSlice("$perc%")
+        fun perc(perc: Double) = ImageSlice("$perc%")
+        fun stretch(url: String) = ImageSlice("stretch")
     }
 
 }
@@ -48,11 +51,12 @@ class ImageSource(
 ) : CssProperty(value) {
 
     companion object {
-        fun none() = ImageSource("none")
+        val none = ImageSource("none")
+        val initial = ImageSource("initial")
+        val inherit = ImageSource("inherit")
+
         fun text(txt: String) = ImageSource(txt)
         fun image(url: String) = ImageSource("'$url'")
-        fun initial() = ImageSource("initial")
-        fun inherit() = ImageSource("inherit")
     }
 
 }

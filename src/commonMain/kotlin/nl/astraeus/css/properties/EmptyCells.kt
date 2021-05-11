@@ -5,10 +5,10 @@ class EmptyCells(
 ) : CssProperty(value) {
 
     companion object {
-        fun show() = EmptyCells("show")
-        fun hide() = EmptyCells("hide")
-        fun initial() = EmptyCells("initial")
-        fun inherit() = EmptyCells("inherit")
+        val show = EmptyCells("show")
+        val hide = EmptyCells("hide")
+        val initial = EmptyCells("initial")
+        val inherit = EmptyCells("inherit")
     }
 
 }

@@ -5,10 +5,10 @@ class Span(
 ) : CssProperty(value) {
 
     companion object {
-        fun none() = Clip("none")
-        fun all() = Clip("all")
-        fun initial() = Clip("initial")
-        fun inherit() = Clip("inherit")
+        val none = Clip("none")
+        val all = Clip("all")
+        val initial = Clip("initial")
+        val inherit = Clip("inherit")
     }
 
 }

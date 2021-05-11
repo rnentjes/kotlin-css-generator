@@ -5,12 +5,12 @@ class FlexDirection(
 ) : CssProperty(value) {
 
     companion object {
-        fun row() = FlexDirection("row")
-        fun rowReverse() = FlexDirection("row-reverse")
-        fun column() = FlexDirection("column")
-        fun columnReverse() = FlexDirection("column-reverse")
-        fun initial() = FlexDirection("initial")
-        fun inherit() = FlexDirection("inherit")
+        val row = FlexDirection("row")
+        val rowReverse = FlexDirection("row-reverse")
+        val column = FlexDirection("column")
+        val columnReverse = FlexDirection("column-reverse")
+        val initial = FlexDirection("initial")
+        val inherit = FlexDirection("inherit")
     }
 
 }
@@ -20,9 +20,10 @@ class FlexGrowShrink(
 ) : CssProperty(value) {
 
     companion object {
-        fun number(number: Int) = FlexDirection("$number")
-        fun initial() = FlexDirection("initial")
-        fun inherit() = FlexDirection("inherit")
+        val initial = FlexGrowShrink("initial")
+        val inherit = FlexGrowShrink("inherit")
+
+        fun number(number: Int) = FlexGrowShrink("$number")
     }
 
 }
@@ -32,11 +33,11 @@ class FlexWrap(
 ) : CssProperty(value) {
 
     companion object {
-        fun nowrap() = FlexWrap("nowrap")
-        fun wrap() = FlexWrap("wrap")
-        fun wrapReverse() = FlexWrap("wrap-reverse")
-        fun initial() = FlexWrap("initial")
-        fun inherit() = FlexWrap("inherit")
+        val nowrap = FlexWrap("nowrap")
+        val wrap = FlexWrap("wrap")
+        val wrapReverse = FlexWrap("wrap-reverse")
+        val initial = FlexWrap("initial")
+        val inherit = FlexWrap("inherit")
     }
 
 }

@@ -6,12 +6,12 @@ class Clear(
 ): CssProperty(value) {
 
     companion object {
-        fun none() = Clear("none")
-        fun left() = Clear("left")
-        fun right() = Clear("right")
-        fun both() = Clear("both")
-        fun initial() = Clear("initial")
-        fun inherit() = Clear("inherit")
+        val none = Clear("none")
+        val left = Clear("left")
+        val right = Clear("right")
+        val both = Clear("both")
+        val initial = Clear("initial")
+        val inherit = Clear("inherit")
     }
 
 }

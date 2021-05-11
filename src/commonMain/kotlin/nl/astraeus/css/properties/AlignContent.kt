@@ -5,13 +5,13 @@ class AlignContent(
 ) : CssProperty(value) {
 
     companion object {
-        fun stretch() = AlignContent("stretch")
-        fun center() = AlignContent("center")
-        fun flexStart() = AlignContent("flex-start")
-        fun flexEnd() = AlignContent("flex-end")
-        fun spaceBetween() = AlignContent("space-between")
-        fun spaceAround() = AlignContent("space-around")
-        fun initial() = AlignContent("initial")
-        fun inherit() = AlignContent("inherit")
+        val stretch = AlignContent("stretch")
+        val center = AlignContent("center")
+        val flexStart = AlignContent("flex-start")
+        val flexEnd = AlignContent("flex-end")
+        val spaceBetween = AlignContent("space-between")
+        val spaceAround = AlignContent("space-around")
+        val initial = AlignContent("initial")
+        val inherit = AlignContent("inherit")
     }
 }

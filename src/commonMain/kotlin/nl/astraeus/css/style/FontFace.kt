@@ -3,25 +3,36 @@ package nl.astraeus.css.style
 import nl.astraeus.css.properties.*
 
 @CssTagMarker
-open class FontFace(
-    var fontFamily: TextProperty? = null,
-    var fontSize: FontSize? = null,
-    var src: TextProperty? = null,
-    var fontStretch: FontStretch? = null,
-    var fontStyle: FontStyle? = null,
-    var fontWeight: FontWeight? = null,
-    var unicodeRange: TextProperty? = null
-) : CssGenerator() {
+open class FontFace : CssGenerator() {
 
     override fun getValidator(name: String) = null
 
-    override fun getMapping(): Map<String, Any?> = mapOf(
-        "font-family" to fontFamily,
-        "font-size" to fontSize,
-        "src" to src,
-        "font-stretch" to fontStretch,
-        "font-style" to fontStyle,
-        "font-weight" to fontWeight,
-        "unicode-range" to unicodeRange
-    )
+    fun fontFamily(font: String) {
+        props["font-family"] = listOf(CssProperty(font))
+    }
+
+    fun fontSize(size: FontSize) {
+        props["font-size"] = listOf(size)
+    }
+
+    fun src(src: String) {
+        props["src"] = listOf(CssProperty(src))
+    }
+
+    fun fontStretch(stretch: FontStretch) {
+        props["font-stretch"] = listOf(stretch)
+    }
+
+    fun fontStyle(style: FontStyle) {
+        props["font-style"] = listOf(style)
+    }
+
+    fun fontWeight(weight: FontWeight) {
+        props["font-weight"] = listOf(weight)
+    }
+
+    fun unicodeRange(unicodeRange: String) {
+        props["unicode-range"] = listOf(CssProperty(unicodeRange))
+    }
+
 }

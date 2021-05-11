@@ -5,18 +5,56 @@ open class Measurement(
 ) : CssProperty(value) {
 
     companion object {
-        fun auto() = Measurement("auto")
-        fun initial() = Measurement("initial")
-        fun inherit() = Measurement("inherit")
-        fun normal() = Measurement("normal")
-        fun px(nr: Int) = Measurement("${nr}px")
-        fun em(nr: Int) = Measurement("${nr}em")
-        fun em(nr: Double) = Measurement("${nr}em")
-        fun perc(nr: Int) = Measurement("${nr}%")
-        fun perc(nr: Double) = Measurement("${nr}%")
-        fun pc(nr: Int) = Measurement("${nr}pc")
-        fun pc(nr: Double) = Measurement("${nr}pc")
-        fun cm(nr: Int) = Measurement("${nr}cm")
-        fun cm(nr: Double) = Measurement("${nr}cm")
+        val auto = Measurement("auto")
+        val initial = Measurement("initial")
+        val inherit = Measurement("inherit")
+        val normal = Measurement("normal")
+
+        fun px(nr: Int) = if (nr == 0) { Measurement("0") } else { Measurement("${nr}px") }
+        fun px(nr: Double) = nr.px
+        fun em(nr: Int) = nr.em
+        fun em(nr: Double) = nr.em
+        fun prc(nr: Int) = nr.prc
+        fun prc(nr: Double) = nr.prc
+        fun pc(nr: Int) = nr.pc
+        fun pc(nr: Double) = nr.pc
+        fun cm(nr: Int) = nr.cm
+        fun cm(nr: Double) = nr.cm
+    }
+}
+
+val Int.px: Measurement
+    get() = Measurement("${this}${if (this == 0) { "" } else { "px"}}")
+val Int.em: Measurement
+    get() = Measurement("${this}${if (this == 0) { "" } else { "em"}}")
+val Int.rem: Measurement
+    get() = Measurement("${this}${if (this == 0) { "" } else { "rem"}}")
+val Int.prc: Measurement
+    get() = Measurement("${this}%")
+val Int.pc: Measurement
+    get() = Measurement("${this}pc")
+val Int.cm: Measurement
+    get() = Measurement("${this}cm")
+fun Int.px(): Measurement = Measurement.px(this)
+
+val Double.px: Measurement
+    get() = Measurement("${this}px")
+val Double.em: Measurement
+    get() = Measurement("${this}em")
+val Double.rem: Measurement
+    get() = Measurement("${this}rem")
+val Double.prc: Measurement
+    get() = Measurement("${this}%")
+val Double.pc: Measurement
+    get() = Measurement("${this}pc")
+val Double.cm: Measurement
+    get() = Measurement("${this}cm")
+fun Double.px(): Measurement = Measurement.px(this)
+
+open class LineHeight(value: String) : CssProperty(value) {
+    companion object {
+        val normal = LineHeight("normal")
+        val initial = LineHeight("initial")
+        val inherit = LineHeight("inherit")
     }
 }

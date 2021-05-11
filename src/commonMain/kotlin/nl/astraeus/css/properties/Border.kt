@@ -3,17 +3,6 @@ package nl.astraeus.css.properties
 class BorderRadius(
     value: String
 ): CssProperty(value) {
-    constructor(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int): this(
-        "${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px"
-    )
-    constructor(topLeft: Int, topRightBottomLeft: Int, bottomRight: Int): this(
-        "${topLeft}px ${topRightBottomLeft}px ${bottomRight}px"
-    )
-    constructor(topLeftBottomRight: Int, topRightBottomLeft: Int): this(
-        "${topLeftBottomRight}px ${topRightBottomLeft}px"
-    )
-    constructor(radius: Int): this("${radius}px")
-
     companion object {
         fun px(nr: Int) = BorderRadius("${nr}px")
         fun em(nr: Int) = BorderRadius("${nr}em")
@@ -24,28 +13,28 @@ class BorderRadius(
         fun pc(nr: Double) = BorderRadius("${nr}pc")
         fun cm(nr: Int) = BorderRadius("${nr}cm")
         fun cm(nr: Double) = BorderRadius("${nr}cm")
-        fun initial() = BorderRadius("initial")
-        fun inherit() = BorderRadius("inherit")
+        val initial = BorderRadius("initial")
+        val inherit = BorderRadius("inherit")
     }
 }
 
-class RuleBorderStyle(
+class BorderStyle(
     value: String
 ): CssProperty(value) {
 
     companion object {
-        fun none() = RuleBorderStyle("none")
-        fun hidden() = RuleBorderStyle("hidden")
-        fun dotted() = RuleBorderStyle("dotted")
-        fun dashed() = RuleBorderStyle("dashed")
-        fun solid() = RuleBorderStyle("solid")
-        fun double() = RuleBorderStyle("double")
-        fun groove() = RuleBorderStyle("groove")
-        fun ridge() = RuleBorderStyle("ridge")
-        fun inset() = RuleBorderStyle("inset")
-        fun outset() = RuleBorderStyle("outset")
-        fun initial() = RuleBorderStyle("initial")
-        fun inherit() = RuleBorderStyle("inherit")
+        val none = BorderStyle("none")
+        val hidden = BorderStyle("hidden")
+        val dotted = BorderStyle("dotted")
+        val dashed = BorderStyle("dashed")
+        val solid = BorderStyle("solid")
+        val double = BorderStyle("double")
+        val groove = BorderStyle("groove")
+        val ridge = BorderStyle("ridge")
+        val inset = BorderStyle("inset")
+        val outset = BorderStyle("outset")
+        val initial = BorderStyle("initial")
+        val inherit = BorderStyle("inherit")
     }
 }
 
@@ -54,22 +43,11 @@ class BorderWidth(
 ): CssProperty(value) {
 
     companion object {
-        fun thin() = BorderWidth("thin")
-        fun medium() = BorderWidth("medium")
-        fun thick() = BorderWidth("thick")
-
-        fun px(nr: Int) = BorderWidth("${nr}px")
-        fun em(nr: Int) = BorderWidth("${nr}em")
-        fun em(nr: Double) = BorderWidth("${nr}em")
-        fun perc(nr: Int) = BorderWidth("${nr}%")
-        fun perc(nr: Double) = BorderWidth("${nr}%")
-        fun pc(nr: Int) = BorderWidth("${nr}pc")
-        fun pc(nr: Double) = BorderWidth("${nr}pc")
-        fun cm(nr: Int) = BorderWidth("${nr}cm")
-        fun cm(nr: Double) = BorderWidth("${nr}cm")
-
-        fun initial() = BorderWidth("initial")
-        fun inherit() = BorderWidth("inherit")
+        val thin = BorderWidth("thin")
+        val medium = BorderWidth("medium")
+        val thick = BorderWidth("thick")
+        val initial = BorderWidth("initial")
+        val inherit = BorderWidth("inherit")
     }
 }
 
@@ -78,8 +56,8 @@ class BorderCollapse(
 ): CssProperty(value) {
 
     companion object {
-        fun separate() = BorderWidth("separate")
-        fun collapse() = BorderWidth("collapse")
+        val separate = BorderCollapse("separate")
+        val collapse = BorderCollapse("collapse")
     }
 }
 
@@ -88,13 +66,13 @@ class BorderImageWidth (
 ): CssProperty(value) {
 
     companion object {
-        fun px(nr: Int) = BorderRadius("${nr}px")
-        fun nr(nr: Int) = Image("$nr")
-        fun perc(nr: Int) = BorderRadius("${nr}%")
-        fun perc(nr: Double) = BorderRadius("${nr}%")
-        fun auto() = BorderWidth("auto")
-        fun initial() = BorderWidth("initial")
-        fun inherit() = BorderWidth("inherit")
+        fun px(nr: Int) = BorderImageWidth("${nr}px")
+        fun nr(nr: Int) = BorderImageWidth("$nr")
+        fun perc(nr: Int) = BorderImageWidth("${nr}%")
+        fun perc(nr: Double) = BorderImageWidth("${nr}%")
+        val auto = BorderImageWidth("auto")
+        val initial = BorderImageWidth("initial")
+        val inherit = BorderImageWidth("inherit")
     }
 }
 
@@ -103,16 +81,16 @@ class BorderSpacing(
 ): CssProperty(value) {
 
     companion object {
-        fun px(nr: Int) = BorderRadius("${nr}px")
-        fun em(nr: Int) = BorderRadius("${nr}em")
-        fun em(nr: Double) = BorderRadius("${nr}em")
-        fun perc(nr: Int) = BorderRadius("${nr}%")
-        fun perc(nr: Double) = BorderRadius("${nr}%")
-        fun pc(nr: Int) = BorderRadius("${nr}pc")
-        fun pc(nr: Double) = BorderRadius("${nr}pc")
-        fun cm(nr: Int) = BorderRadius("${nr}cm")
-        fun cm(nr: Double) = BorderRadius("${nr}cm")
-        fun initial() = BorderRadius("initial")
-        fun inherit() = BorderRadius("inherit")
+        fun px(nr: Int) = BorderSpacing("${nr}px")
+        fun em(nr: Int) = BorderSpacing("${nr}em")
+        fun em(nr: Double) = BorderSpacing("${nr}em")
+        fun perc(nr: Int) = BorderSpacing("${nr}%")
+        fun perc(nr: Double) = BorderSpacing("${nr}%")
+        fun pc(nr: Int) = BorderSpacing("${nr}pc")
+        fun pc(nr: Double) = BorderSpacing("${nr}pc")
+        fun cm(nr: Int) = BorderSpacing("${nr}cm")
+        fun cm(nr: Double) = BorderSpacing("${nr}cm")
+        val initial = BorderSpacing("initial")
+        val inherit = BorderSpacing("inherit")
     }
 }

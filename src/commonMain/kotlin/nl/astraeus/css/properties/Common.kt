@@ -14,8 +14,8 @@ class Length(
         fun pc(nr: Double) = Length("${nr}pc")
         fun cm(nr: Int) = Length("${nr}cm")
         fun cm(nr: Double) = Length("${nr}cm")
-        fun initial() = Length("initial")
-        fun inherit() = Length("inherit")
+        val initial = Length("initial")
+        val inherit = Length("inherit")
     }
 
 }
@@ -25,9 +25,9 @@ class Fill(
 ) : CssProperty(value) {
 
     companion object {
-        fun balance() = Fill("balance")
-        fun auto() = Fill("auto")
-        fun initial() = Fill("initial")
-        fun inherit() = Fill("inherit")
+        val balance = Fill("balance")
+        val auto = Fill("auto")
+        val initial = Fill("initial")
+        val inherit = Fill("inherit")
     }
 }

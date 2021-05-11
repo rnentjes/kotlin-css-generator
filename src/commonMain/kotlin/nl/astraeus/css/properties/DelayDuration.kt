@@ -5,8 +5,10 @@ class DelayDuration(
 ) : CssProperty(value) {
 
     companion object {
+        val initial = DelayDuration("initial")
+        val inherit = DelayDuration("inherit")
+
         fun seconds(seconds: Int) = DelayDuration("${seconds}s")
-        fun initial() = DelayDuration("initial")
-        fun inherit() = DelayDuration("inherit")
+        fun millis(milliSeconds: Int) = DelayDuration("${milliSeconds}ms")
     }
 }

@@ -5,11 +5,11 @@ class BoxDecorationBreak(
 ): CssProperty(value) {
 
     companion object {
-        fun slice() = BorderWidth("slice")
-        fun clone() = BorderWidth("clone")
-        fun initial() = BorderWidth("initial")
-        fun inherit() = BorderWidth("inherit")
-        fun unset() = BorderWidth("unset")
+        val slice = BoxDecorationBreak("slice")
+        val clone = BoxDecorationBreak("clone")
+        val initial = BoxDecorationBreak("initial")
+        val inherit = BoxDecorationBreak("inherit")
+        val unset = BoxDecorationBreak("unset")
     }
 }
 
@@ -18,11 +18,12 @@ class BoxShadow(
 ): CssProperty(value) {
 
     companion object {
-        fun none() = BoxShadow("none")
+        val none = BoxShadow("none")
+        val inset = BoxShadow("inset")
+        val initial = BoxShadow("initial")
+        val inherit = BoxShadow("inherit")
+
         fun text(txt: String) = BoxShadow(txt)
-        fun inset() = BoxShadow("inset")
-        fun initial() = BoxShadow("initial")
-        fun inherit() = BoxShadow("inherit")
     }
 }
 
@@ -31,9 +32,9 @@ class BoxSizing(
 ): CssProperty(value) {
 
     companion object {
-        fun contextBox() = BoxSizing("content-box")
-        fun borderBox() = BoxSizing("border-box")
-        fun initial() = BoxShadow("initial")
-        fun inherit() = BoxShadow("inherit")
+        val contextBox = BoxSizing("content-box")
+        val borderBox = BoxSizing("border-box")
+        val initial = BoxShadow("initial")
+        val inherit = BoxShadow("inherit")
     }
 }

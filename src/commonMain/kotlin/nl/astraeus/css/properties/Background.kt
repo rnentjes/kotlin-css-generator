@@ -5,11 +5,11 @@ class BackgroundAttachment(
 ) : CssProperty(value) {
 
     companion object {
-        fun scroll() = BackgroundAttachment("scroll")
-        fun fixed() = BackgroundAttachment("fixed")
-        fun local() = BackgroundAttachment("local")
-        fun initial() = BackgroundAttachment("initial")
-        fun inherit() = BackgroundAttachment("inherit")
+        val scroll = BackgroundAttachment("scroll")
+        val fixed = BackgroundAttachment("fixed")
+        val local = BackgroundAttachment("local")
+        val initial = BackgroundAttachment("initial")
+        val inherit = BackgroundAttachment("inherit")
     }
 }
 
@@ -18,16 +18,16 @@ class BackgroundBlendMode(
 ) : CssProperty(value) {
 
     companion object {
-        fun normal() = BackgroundBlendMode("normal")
-        fun multiply() = BackgroundBlendMode("multiply")
-        fun screen() = BackgroundBlendMode("screen")
-        fun overlay() = BackgroundBlendMode("overlay")
-        fun darken() = BackgroundBlendMode("darken")
-        fun lighten() = BackgroundBlendMode("lighten")
-        fun colorDodge() = BackgroundBlendMode("color-dodge")
-        fun saturation() = BackgroundBlendMode("saturation")
-        fun color() = BackgroundBlendMode("color")
-        fun luminosity() = BackgroundBlendMode("luminosity")
+        val normal = BackgroundBlendMode("normal")
+        val multiply = BackgroundBlendMode("multiply")
+        val screen = BackgroundBlendMode("screen")
+        val overlay = BackgroundBlendMode("overlay")
+        val darken = BackgroundBlendMode("darken")
+        val lighten = BackgroundBlendMode("lighten")
+        val colorDodge = BackgroundBlendMode("color-dodge")
+        val saturation = BackgroundBlendMode("saturation")
+        val color = BackgroundBlendMode("color")
+        val luminosity = BackgroundBlendMode("luminosity")
     }
 }
 
@@ -36,12 +36,11 @@ class BackgroundPosition(
 ) : CssProperty(value) {
 
     companion object {
-        fun left() = BackgroundPosition("left")
-        fun center() = BackgroundPosition("center")
-        fun right() = BackgroundPosition("right")
-        fun initial() = BackgroundPosition("initial")
-        fun inherit() = BackgroundPosition("inherit")
-
+        val left = BackgroundPosition("left")
+        val center = BackgroundPosition("center")
+        val right = BackgroundPosition("right")
+        val initial = BackgroundPosition("initial")
+        val inherit = BackgroundPosition("inherit")
     }
 }
 
@@ -50,15 +49,15 @@ class BackgroundRepeat(
 ) : CssProperty(value) {
 
     companion object {
-        fun repeat() = BackgroundRepeat("repeat")
-        fun repeatX() = BackgroundRepeat("repeat-x")
-        fun repeatY() = BackgroundRepeat("repeat-y")
-        fun noRepeat() = BackgroundRepeat("no-repeat")
-        fun space() = BackgroundRepeat("space")
-        fun round() = BackgroundRepeat("round")
-        fun initial() = BackgroundRepeat("initial")
-        fun inherit() = BackgroundRepeat("inherit")
-        fun unset() = BackgroundRepeat("unset")
+        val repeat = BackgroundRepeat("repeat")
+        val repeatX = BackgroundRepeat("repeat-x")
+        val repeatY = BackgroundRepeat("repeat-y")
+        val noRepeat = BackgroundRepeat("no-repeat")
+        val space = BackgroundRepeat("space")
+        val round = BackgroundRepeat("round")
+        val initial = BackgroundRepeat("initial")
+        val inherit = BackgroundRepeat("inherit")
+        val unset = BackgroundRepeat("unset")
     }
 }
 
@@ -69,11 +68,12 @@ class BackgroundSize(
     companion object {
         fun px(px: Int) = BackgroundSize("${px}px")
         fun perc(pc: Double) = BackgroundSize("${pc}%")
-        fun auto() = BackgroundSize("auto")
-        fun cover() = BackgroundSize("cover")
-        fun contain() = BackgroundSize("contain")
-        fun initial() = BackgroundSize("initial")
-        fun inherit() = BackgroundSize("inherit")
+
+        val auto = BackgroundSize("auto")
+        val cover = BackgroundSize("cover")
+        val contain = BackgroundSize("contain")
+        val initial = BackgroundSize("initial")
+        val inherit = BackgroundSize("inherit")
     }
 }
 

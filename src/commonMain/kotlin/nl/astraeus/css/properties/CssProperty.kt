@@ -1,10 +1,14 @@
 package nl.astraeus.css.properties
 
-open class CssProperty(
-    val value: String
-) {
+interface CssValue {
+    fun css(): String
+}
 
-    fun css(): String = value
+open class CssProperty(
+    var value: String
+): CssValue {
+
+    override fun css(): String = value
 
 }
 
