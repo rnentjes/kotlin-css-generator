@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "nl.astraeus"
-version = "0.4.20"
+version = "0.4.21"
 
 repositories {
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }

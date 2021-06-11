@@ -75,7 +75,8 @@ abstract class CssGenerator {
     namespace: String = "",
     indent: String = "",
     minified: Boolean = false,
-    warnOnRedeclaration: Boolean = true
+    warnOnRedeclaration: Boolean = true,
+    allowCommaInSelector: Boolean = false
   ): String {
     val builder = StringBuilder()
 
@@ -96,6 +97,10 @@ abstract class CssGenerator {
       css.append(finalStyle.generatePropertyCss("  $indent"))
 
       if (css.isNotBlank()) {
+        check (allowCommaInSelector || !name.contains(',')) {
+          "Comma is not allowed in selector (option is set in generateCss call)"
+        }
+
         builder.append("\n$namespace$name".trim())
 
         //builder.append("  $indent")
@@ -144,7 +149,11 @@ abstract class CssGenerator {
         builder.append("}\n\n")
       }
 
-      builder.append(finalStyle.generateCss("$namespace$name".trim(), indent))
+      builder.append(finalStyle.generateCss(
+        "$namespace$name".trim(),
+        indent,
+        allowCommaInSelector = allowCommaInSelector
+      ))
     }
 
     if (this is ConditionalStyle) {
@@ -161,7 +170,11 @@ abstract class CssGenerator {
 
             css(mediaStyle)
 
-            builder.append(mediaStyle.generateCss("", "  $indent"))
+            builder.append(mediaStyle.generateCss(
+              "",
+              "  $indent",
+              allowCommaInSelector = allowCommaInSelector
+            ))
           }
 
           builder.append(indent)
@@ -182,7 +195,11 @@ abstract class CssGenerator {
 
             css(mediaStyle)
 
-            builder.append(mediaStyle.generateCss("", "  $indent"))
+            builder.append(mediaStyle.generateCss(
+              "",
+              "  $indent",
+              allowCommaInSelector = allowCommaInSelector
+            ))
           }
 
           builder.append(indent)

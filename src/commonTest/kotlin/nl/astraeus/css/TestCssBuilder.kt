@@ -12,6 +12,7 @@ import nl.astraeus.css.style.attrEquals
 import nl.astraeus.css.style.cls
 import nl.astraeus.css.style.id
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class TestCssBuilder {
 
@@ -173,5 +174,39 @@ class TestCssBuilder {
     }
 
     println(css.generateCss())
+  }
+
+
+  @Test
+  fun testOrWithComma() {
+    val css = style {
+      select("h1") {
+        color(Color.blue)
+
+        select("table") {
+          color(Color.red)
+
+          select("th, td") {
+            color(Color.green)
+          }
+        }
+      }
+    }
+
+    var excepted = false
+    try {
+      println(css.generateCss())
+    } catch(e: Exception) {
+      excepted = true
+      assertTrue {
+        e is IllegalStateException
+      }
+      assertTrue {
+        e.message?.contains("Comma is not allowed in selector") ?: false
+      }
+    }
+    assertTrue {
+      excepted
+    }
   }
 }
