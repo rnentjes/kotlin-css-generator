@@ -154,4 +154,24 @@ class TestCssBuilder {
 
     println(css2.generateCss())
   }
+
+
+  @Test
+  fun testOr() {
+    val css = style {
+      select("h1") {
+        color(Color.blue)
+
+        select("table") {
+          color(Color.red)
+
+          select("th", "td") {
+            color(Color.green)
+          }
+        }
+      }
+    }
+
+    println(css.generateCss())
+  }
 }

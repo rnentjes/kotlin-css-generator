@@ -275,52 +275,76 @@ open class Style : CssGenerator() {
    * like the scss &
    * @param selector blabla
    */
-  fun and(selector: DescriptionProvider, style: Css) {
-    addStyle(selector.description(), style)
+  fun and(vararg selectors: DescriptionProvider, style: Css) {
+    for (selector in selectors) {
+      addStyle(selector.description(), style)
+    }
   }
 
-  fun and(selector: String, style: Css) {
-    addStyle(selector, style)
+  fun and(vararg selectors: String, style: Css) {
+    for (selector in selectors) {
+      addStyle(selector, style)
+    }
   }
 
-  fun select(selector: DescriptionProvider, style: Css) {
-    addStyle(" ${selector.description()}", style)
+  fun select(vararg selectors: DescriptionProvider, style: Css) {
+    for (selector in selectors) {
+      addStyle(" ${selector.description()}", style)
+    }
   }
 
-  fun select(selector: String, style: Css) {
-    addStyle(" $selector", style)
+  fun select(vararg selectors: String, style: Css) {
+    for (selector in selectors) {
+      addStyle(" $selector", style)
+    }
   }
 
-  fun descendant(descName: DescriptionProvider, style: Css) {
-    addStyle(" ${descName.description()}", style)
+  fun descendant(vararg descNames: DescriptionProvider, style: Css) {
+    for (descName in descNames) {
+      addStyle(" ${descName.description()}", style)
+    }
   }
 
-  fun descendant(descName: String, style: Css) {
-    addStyle(" $descName", style)
+  fun descendant(vararg descNames: String, style: Css) {
+    for (descName in descNames) {
+      addStyle(" $descName", style)
+    }
   }
 
-  fun child(childName: DescriptionProvider, style: Css) {
-    addStyle(" > ${childName.description()}", style)
+  fun child(vararg childNames: DescriptionProvider, style: Css) {
+    for (childName in childNames) {
+      addStyle(" > ${childName.description()}", style)
+    }
   }
 
-  fun child(childName: String, style: Css) {
-    addStyle(" > $childName", style)
+  fun child(vararg childNames: String, style: Css) {
+    for (childName in childNames) {
+      addStyle(" > $childName", style)
+    }
   }
 
-  fun sibling(childName: DescriptionProvider, style: Css) {
-    addStyle(" ~ ${childName.description()}", style)
+  fun sibling(vararg childNames: DescriptionProvider, style: Css) {
+    for (childName in childNames) {
+      addStyle(" ~ ${childName.description()}", style)
+    }
   }
 
-  fun sibling(childName: String, style: Css) {
-    addStyle(" ~ $childName", style)
+  fun sibling(vararg childNames: String, style: Css) {
+    for (childName in childNames) {
+      addStyle(" ~ $childName", style)
+    }
   }
 
-  fun adjSibling(childName: DescriptionProvider, style: Css) {
-    addStyle(" + ${childName.description()}", style)
+  fun adjSibling(vararg childNames: DescriptionProvider, style: Css) {
+    for (childName in childNames) {
+      addStyle(" + ${childName.description()}", style)
+    }
   }
 
-  fun adjSibling(childName: String, style: Css) {
-    addStyle(" + $childName", style)
+  fun adjSibling(vararg childNames: String, style: Css) {
+    for (childName in childNames) {
+      addStyle(" + $childName", style)
+    }
   }
 
   fun active(style: Css) {
