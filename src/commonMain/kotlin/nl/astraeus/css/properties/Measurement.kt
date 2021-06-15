@@ -25,6 +25,7 @@ open class Measurement(
     fun pc(nr: Double) = nr.pc
     fun cm(nr: Int) = nr.cm
     fun cm(nr: Double) = nr.cm
+    fun fr(nr: Int) = nr.fr
   }
 }
 
@@ -64,6 +65,8 @@ val Int.pc: Measurement
   get() = Measurement("${this}pc")
 val Int.cm: Measurement
   get() = Measurement("${this}cm")
+val Int.fr: Measurement
+  get() = Measurement("${this}fr")
 
 fun Int.px(): Measurement = Measurement.px(this)
 
