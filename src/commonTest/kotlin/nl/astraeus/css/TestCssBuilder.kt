@@ -237,6 +237,7 @@ class TestCssBuilder {
     assertEquals(0.5, hsla.getAlpha())
     assertEquals(0.4, hexa.getAlpha())
     assertEquals("646e78", rgba.toHex())
+    assertEquals("bf4240", hsla.toHex())
   }
 
 }

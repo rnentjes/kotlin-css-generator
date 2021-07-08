@@ -63,7 +63,11 @@ class Color(value: String) : CssProperty(value) {
     }
   }
 
-  fun toHex(): String  = toRGBA().asHex()
+  fun toHex(): String  = if (isHsla() || isHsl()) {
+    fromHSLANotation().asRGBA().asHex()
+  } else {
+    toRGBA().asHex()
+  }
 
   fun isHsla(): Boolean {
     val v = rgb ?: value
