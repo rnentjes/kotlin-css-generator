@@ -5,13 +5,17 @@ import nl.astraeus.css.properties.Count
 import nl.astraeus.css.properties.Display
 import nl.astraeus.css.properties.em
 import nl.astraeus.css.properties.hsl
+import nl.astraeus.css.properties.hsla
 import nl.astraeus.css.properties.px
+import nl.astraeus.css.properties.rgb
 import nl.astraeus.css.properties.rgba
 import nl.astraeus.css.style.attr
 import nl.astraeus.css.style.attrEquals
 import nl.astraeus.css.style.cls
 import nl.astraeus.css.style.id
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TestCssBuilder {
@@ -209,4 +213,30 @@ class TestCssBuilder {
       excepted
     }
   }
+
+
+  @Test
+  fun testAlhpaFunctions() {
+    val hsl = hsl(1, 50, 50)
+    val hsla = hsla(1, 50, 50, 0.5)
+    val rgb = rgb(101, 111, 121)
+    val rgba = rgba(100, 110, 120, 0.4)
+    val hex = Color("#88ff44")
+    val hexa = Color("#88ff4466")
+
+    assertFalse { hsl.hasAlpha() }
+    assertFalse { rgb.hasAlpha() }
+    assertFalse { hex.hasAlpha() }
+
+    assertTrue { hsla.hasAlpha() }
+    assertTrue { rgba.hasAlpha() }
+    assertTrue { hexa.hasAlpha() }
+
+    assertEquals(0.5, hsla.getAlpha())
+    assertEquals(0.4, rgba.getAlpha())
+    assertEquals(0.5, hsla.getAlpha())
+    assertEquals(0.4, hexa.getAlpha())
+    assertEquals("646e78", rgba.toHex())
+  }
+
 }

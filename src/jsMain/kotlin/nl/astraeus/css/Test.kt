@@ -4,6 +4,7 @@ import nl.astraeus.css.properties.AlignContent
 import nl.astraeus.css.properties.DelayDuration
 import nl.astraeus.css.properties.TimingFunction
 import nl.astraeus.css.properties.hex
+import nl.astraeus.css.properties.hsla
 
 fun main() {
   val sd = style {
@@ -22,7 +23,11 @@ fun main() {
         )
       }
     }
+
+    val bla = hsla(1, 50,50,0.5)
+    bla.toRGBA()
+
   }
 
-  println(sd.generateCss())
+  //println(sd.generateCss())
 }

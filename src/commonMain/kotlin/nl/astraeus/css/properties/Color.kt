@@ -5,6 +5,25 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+private val hexString = "0123456789abcdef"
+
+private fun Int.toColorHex(minimumDigits: Int = 2): String {
+  val result = StringBuilder()
+  var value = this
+
+  while(value > 0) {
+    result.append(hexString[value%16])
+
+    value /= 16
+  }
+
+  while(result.length < minimumDigits) {
+    result.append("0")
+  }
+
+  return result.reverse().toString()
+}
+
 /**
  * See [CSS Color Module Level 3](https://www.w3.org/TR/2018/REC-css-color-3-20180619/)
  *
@@ -28,6 +47,340 @@ class Color(value: String) : CssProperty(value) {
 
   private constructor(value: String, rgb: String) : this(value) {
     this.rgb = rgb
+  }
+
+  fun hasAlpha(): Boolean = isRgba() || isHexa() || isHsla()
+
+  fun getAlpha(): Double = when {
+    isHexa() || isRgba() -> {
+      toRGBA().alpha
+    }
+    isHsla() -> {
+      fromHSLANotation().alpha
+    }
+    else -> {
+      1.0
+    }
+  }
+
+  fun toHex(): String  = toRGBA().asHex()
+
+  fun isHsla(): Boolean {
+    val v = rgb ?: value
+
+    return v.startsWith("hsla")
+  }
+
+  fun isHsl(): Boolean {
+    val v = rgb ?: value
+
+    return v.startsWith("hsl(")
+  }
+
+  fun isRgba(): Boolean {
+    val v = rgb ?: value
+
+    return v.startsWith("rgba(")
+  }
+
+  fun isRgb(): Boolean {
+    val v = rgb ?: value
+
+    return v.startsWith("rgb(")
+  }
+
+  fun isHex(): Boolean {
+    val v = rgb ?: value
+
+    return v.startsWith("#") && v.length < 8
+  }
+
+  fun isHexa(): Boolean {
+    val v = rgb ?: value
+
+    return v.startsWith("#") && v.length > 7
+  }
+
+  /**
+   * withAlpha preserves existing alpha value: rgba(0, 0, 0, 0.5).withAlpha(0.1) = rgba(0, 0, 0, 0.05)
+   */
+  fun withAlpha(alpha: Double) =
+    when {
+      value.startsWith("hsl", true) -> with(fromHSLANotation()) { hsla(hue, saturation, lightness, normalizeAlpha(alpha) * this.alpha) }
+      else -> with(toRGBA()) { rgba(red, green, blue, normalizeAlpha(alpha) * this.alpha) }
+    }
+
+  /**
+   * changeAlpha rewrites existing alpha value: rgba(0, 0, 0, 0.5).withAlpha(0.1) = rgba(0, 0, 0, 0.1)
+   */
+  fun changeAlpha(alpha: Double) =
+    when {
+      value.startsWith("hsl", true) -> with(fromHSLANotation()) { hsla(hue, saturation, lightness, normalizeAlpha(alpha)) }
+      else -> with(toRGBA()) { rgba(red, green, blue, normalizeAlpha(alpha)) }
+    }
+
+  // https://stackoverflow.com/questions/2049230/convert-rgba-color-to-rgb
+  fun blend(backgroundColor: Color): Color {
+    val source = this.toRGBA()
+    val background = backgroundColor.toRGBA()
+
+    val targetR = ((1 - source.alpha) * background.red) + (source.alpha * source.red)
+    val targetG = ((1 - source.alpha) * background.green) + (source.alpha * source.green)
+    val targetB = ((1 - source.alpha) * background.blue) + (source.alpha * source.blue)
+
+    return rgb(targetR.roundToInt(), targetG.roundToInt(), targetB.roundToInt())
+  }
+
+  /**
+   * Lighten the color by the specified percent (between 0-100), returning a new instance of Color.
+   *
+   * @param percent the percent to lighten the Color
+   * @return a new lightened version of this color
+   */
+  fun lighten(percent: Int): Color {
+    val isHSLA = value.startsWith("hsl", ignoreCase = true)
+    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
+
+    val lightness = hsla.lightness + (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
+    val newHSLa = hsla.copy(lightness = normalizePercent(lightness))
+    return if (isHSLA) {
+      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
+    } else {
+      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
+    }
+  }
+
+  /**
+   * Darken the color by the specified percent (between 0-100), returning a new instance of Color.
+   *
+   * @param percent the percent to darken the Color
+   * @return a new darkened version of this color
+   */
+  fun darken(percent: Int): Color {
+    val isHSLA = value.startsWith("hsl", ignoreCase = true)
+    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
+
+    val darkness = hsla.lightness - (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
+    val newHSLa = hsla.copy(lightness = normalizePercent(darkness))
+    return if (isHSLA) {
+      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
+    } else {
+      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
+    }
+  }
+
+  /**
+   * Increase contrast, if lightness > 50 then darken else lighten
+   *
+   * @param percent the percent to lighten/darken the Color
+   * @return a new ligtened/darkened version of this color
+   */
+  fun contrast(percent: Int): Color {
+    val isHSLA = value.startsWith("hsl", ignoreCase = true)
+    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
+
+    val darkness = if (hsla.lightness > 50) {
+      hsla.lightness - (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
+    } else {
+      hsla.lightness + (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
+    }
+
+    val newHSLa = hsla.copy(lightness = normalizePercent(darkness))
+    return if (isHSLA) {
+      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
+    } else {
+      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
+    }
+  }
+
+  /**
+   * Saturate the color by the specified percent (between 0-100), returning a new instance of Color.
+   *
+   * @param percent the percent to saturate the Color
+   * @return a new saturated version of this color
+   */
+  fun saturate(percent: Int): Color {
+    val isHSLA = value.startsWith("hsl", ignoreCase = true)
+    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
+
+    val saturation = hsla.saturation + (hsla.saturation * (normalizePercent(percent) / 100.0)).roundToInt()
+    val newHSLa = hsla.copy(saturation = normalizePercent(saturation))
+    return if (isHSLA) {
+      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
+    } else {
+      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
+    }
+  }
+
+  /**
+   * Desaturate the color by the specified percent (between 0-100), returning a new instance of Color.
+   *
+   * @param percent the percent to desaturate the Color
+   * @return a new desaturated version of this color
+   */
+  fun desaturate(percent: Int): Color {
+    val isHSLA = value.startsWith("hsl", ignoreCase = true)
+    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
+
+    val desaturation = hsla.saturation - (hsla.saturation * (normalizePercent(percent) / 100.0)).roundToInt()
+    val newHSLa = hsla.copy(saturation = normalizePercent(desaturation))
+    return if (isHSLA) {
+      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
+    } else {
+      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
+    }
+  }
+
+  internal data class RGBA(
+    val red: Int,
+    val green: Int,
+    val blue: Int,
+    val alpha: Double = 1.0
+  ) {
+
+    // Algorithm adapted from http://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
+    fun asHSLA(): HSLA {
+      // scale R, G, B values into 0..1 fractions
+      val r = red / 255.0
+      val g = green / 255.0
+      val b = blue / 255.0
+
+      val cMax = maxOf(r, g, b)
+      val cMin = minOf(r, g, b)
+      val chroma = cMax - cMin
+
+      val lg = normalizeFractionalPercent((cMax + cMin) / 2)
+      val s = if (chroma != 0.0) normalizeFractionalPercent(chroma / (1.0 - abs((2.0 * lg) - 1.0))) else 0.0
+      val h = when (cMax) {
+        cMin -> 0.0
+        r -> 60 * (((g - b) / chroma) % 6.0)
+        g -> 60 * (((b - r) / chroma) + 2)
+        b -> 60 * (((r - g) / chroma) + 4)
+        else -> error("Unexpected value for max") // theoretically unreachable bc maxOf(r, g, b) above
+      }
+
+      return HSLA(normalizeHue(h), (s * 100).roundToInt(), (lg * 100).roundToInt(), alpha)
+    }
+
+    fun asHex(): String {
+      val result = StringBuilder()
+
+      result.append(red.toColorHex(2))
+      result.append(green.toColorHex(2))
+      result.append(blue.toColorHex(2))
+
+      return result.toString()
+    }
+  }
+
+  internal data class HSLA(
+    val hue: Int,
+    val saturation: Int,
+    val lightness: Int,
+    val alpha: Double = 1.0
+  ) {
+
+    // Algorithm from W3C link referenced in class comment (section 4.2.4. HSL color values)
+    fun asRGBA(): RGBA {
+      fun hueToRGB(m1: Double, m2: Double, h: Double): Double {
+        val hu = if (h < 0) h + 1 else if (h > 1) h - 1 else h
+        return when {
+          (hu < 1.0 / 6) -> m1 + (m2 - m1) * 6 * hu
+          (hu < 1.0 / 2) -> m2
+          (hu < 2.0 / 3) -> m1 + ((m2 - m1) * 6 * (2.0 / 3 - hu))
+          else -> m1
+        }
+      }
+
+      if (saturation == 0) return RGBA(lightness, lightness, lightness)
+
+      // scale H, S, V values into 0..1 fractions
+      val h = (hue % 360.0) / 360.0
+      val s = saturation / 100.0
+      val lg = lightness / 100.0
+
+      val m2 = if (lg < 0.5) lg * (1 + s) else (lg + s - lg * s)
+      val m1 = 2 * lg - m2
+      val r = normalizeFractionalPercent(hueToRGB(m1, m2, h + (1.0 / 3)))
+      val g = normalizeFractionalPercent(hueToRGB(m1, m2, h))
+      val b = normalizeFractionalPercent(hueToRGB(m1, m2, h - (1.0 / 3)))
+      return RGBA((r * 255).roundToInt(), (g * 255).roundToInt(), (b * 255).roundToInt(), alpha)
+    }
+  }
+
+  internal fun fromHSLANotation(): HSLA {
+    val match = HSLA_REGEX.find(value)
+
+    fun getHSLParameter(index: Int) =
+      match?.groups?.get(index)?.value
+        ?: throw IllegalArgumentException("Expected hsl or hsla notation, got $value")
+
+    val hueShape = getHSLParameter(1)
+    val hue = normalizeHue(
+      when {
+        hueShape.endsWith("grad", true) -> hueShape.substringBefore("grad").toDouble() * (9.0 / 10)
+        hueShape.endsWith("rad", true) -> (hueShape.substringBefore("rad").toDouble() * 180) / PI
+        hueShape.endsWith("turn", true) -> hueShape.substringBefore("turn").toDouble() * 360.0
+        hueShape.endsWith("deg", true) -> hueShape.substringBefore("deg").toDouble()
+        else -> hueShape.toDouble()
+      }
+    )
+    val saturation = normalizePercent(getHSLParameter(2).toInt())
+    val lightness = normalizePercent(getHSLParameter(3).toInt())
+    val alpha = normalizeAlpha(match?.groups?.get(4)?.value?.toDouble() ?: 1.0)
+
+    return HSLA(hue, saturation, lightness, alpha)
+  }
+
+  internal fun fromRGBANotation(): RGBA {
+    val match = RGBA_REGEX.find(value)
+
+    fun getRGBParameter(index: Int): Int {
+      val group = match?.groups?.get(index)?.value
+        ?: throw IllegalArgumentException("Expected rgb or rgba notation, got $value")
+
+      return when {
+        (group.endsWith('%')) -> (normalizeFractionalPercent(group.substringBefore('%').toDouble() / 100.0) * 255.0).toInt()
+        else -> normalizeRGB(group.toInt())
+      }
+    }
+
+    val red = getRGBParameter(1)
+    val green = getRGBParameter(2)
+    val blue = getRGBParameter(3)
+    val alpha = normalizeAlpha(match?.groups?.get(4)?.value?.toDouble() ?: 1.0)
+
+    return RGBA(red, green, blue, alpha)
+  }
+
+  internal fun toRGBA(): RGBA {
+    val v = rgb ?: value
+    return when {
+      v.startsWith("rgb") -> fromRGBANotation()
+
+      // Matches #rgb
+      v.startsWith("#") && v.length == 4 -> RGBA(
+        "${v[1]}${v[1]}".toInt(16),
+        "${v[2]}${v[2]}".toInt(16),
+        "${v[3]}${v[3]}".toInt(16)
+      )
+
+      // Matches both #rrggbb
+      v.startsWith("#") && v.length == 7 -> RGBA(
+        (v.substring(1..2)).toInt(16),
+        (v.substring(3..4)).toInt(16),
+        (v.substring(5..6)).toInt(16)
+      )
+
+      // Matches both #rrggbbaa
+      v.startsWith("#") && v.length == 9 -> RGBA(
+        (v.substring(1..2)).toInt(16),
+        (v.substring(3..4)).toInt(16),
+        (v.substring(5..6)).toInt(16),
+        (v.substring(7..8)).toInt(16) / 255.0
+      )
+      else -> throw IllegalArgumentException("Only hexadecimal, rgb, and rgba notations are accepted, got $v")
+    }
   }
 
   companion object {
@@ -217,270 +570,6 @@ class Color(value: String) : CssProperty(value) {
         "^rgba?\\((\\d{1,3}%?)\\s*[, ]\\s*(\\d{1,3}%?)\\s*[, ]\\s*(\\d{1,3}%?)[, ]?\\s*(\\d|(?:\\d?\\.\\d+))?\\)\$",
         RegexOption.IGNORE_CASE
       )
-    }
-  }
-
-  /**
-   * withAlpha preserves existing alpha value: rgba(0, 0, 0, 0.5).withAlpha(0.1) = rgba(0, 0, 0, 0.05)
-   */
-  fun withAlpha(alpha: Double) =
-    when {
-      value.startsWith("hsl", true) -> with(fromHSLANotation()) { hsla(hue, saturation, lightness, normalizeAlpha(alpha) * this.alpha) }
-      else -> with(toRGBA()) { rgba(red, green, blue, normalizeAlpha(alpha) * this.alpha) }
-    }
-
-  /**
-   * changeAlpha rewrites existing alpha value: rgba(0, 0, 0, 0.5).withAlpha(0.1) = rgba(0, 0, 0, 0.1)
-   */
-  fun changeAlpha(alpha: Double) =
-    when {
-      value.startsWith("hsl", true) -> with(fromHSLANotation()) { hsla(hue, saturation, lightness, normalizeAlpha(alpha)) }
-      else -> with(toRGBA()) { rgba(red, green, blue, normalizeAlpha(alpha)) }
-    }
-
-  // https://stackoverflow.com/questions/2049230/convert-rgba-color-to-rgb
-  fun blend(backgroundColor: Color): Color {
-    val source = this.toRGBA()
-    val background = backgroundColor.toRGBA()
-
-    val targetR = ((1 - source.alpha) * background.red) + (source.alpha * source.red)
-    val targetG = ((1 - source.alpha) * background.green) + (source.alpha * source.green)
-    val targetB = ((1 - source.alpha) * background.blue) + (source.alpha * source.blue)
-
-    return rgb(targetR.roundToInt(), targetG.roundToInt(), targetB.roundToInt())
-  }
-
-  /**
-   * Lighten the color by the specified percent (between 0-100), returning a new instance of Color.
-   *
-   * @param percent the percent to lighten the Color
-   * @return a new lightened version of this color
-   */
-  fun lighten(percent: Int): Color {
-    val isHSLA = value.startsWith("hsl", ignoreCase = true)
-    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
-
-    val lightness = hsla.lightness + (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
-    val newHSLa = hsla.copy(lightness = normalizePercent(lightness))
-    return if (isHSLA) {
-      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
-    } else {
-      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
-    }
-  }
-
-  /**
-   * Darken the color by the specified percent (between 0-100), returning a new instance of Color.
-   *
-   * @param percent the percent to darken the Color
-   * @return a new darkened version of this color
-   */
-  fun darken(percent: Int): Color {
-    val isHSLA = value.startsWith("hsl", ignoreCase = true)
-    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
-
-    val darkness = hsla.lightness - (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
-    val newHSLa = hsla.copy(lightness = normalizePercent(darkness))
-    return if (isHSLA) {
-      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
-    } else {
-      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
-    }
-  }
-
-  /**
-   * Increase contrast, if lightness > 50 then darken else lighten
-   *
-   * @param percent the percent to lighten/darken the Color
-   * @return a new ligtened/darkened version of this color
-   */
-  fun contrast(percent: Int): Color {
-    val isHSLA = value.startsWith("hsl", ignoreCase = true)
-    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
-
-    val darkness = if (hsla.lightness > 50) {
-      hsla.lightness - (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
-    } else {
-      hsla.lightness + (hsla.lightness * (normalizePercent(percent) / 100.0)).roundToInt()
-    }
-
-    val newHSLa = hsla.copy(lightness = normalizePercent(darkness))
-    return if (isHSLA) {
-      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
-    } else {
-      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
-    }
-  }
-
-  /**
-   * Saturate the color by the specified percent (between 0-100), returning a new instance of Color.
-   *
-   * @param percent the percent to saturate the Color
-   * @return a new saturated version of this color
-   */
-  fun saturate(percent: Int): Color {
-    val isHSLA = value.startsWith("hsl", ignoreCase = true)
-    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
-
-    val saturation = hsla.saturation + (hsla.saturation * (normalizePercent(percent) / 100.0)).roundToInt()
-    val newHSLa = hsla.copy(saturation = normalizePercent(saturation))
-    return if (isHSLA) {
-      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
-    } else {
-      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
-    }
-  }
-
-  /**
-   * Desaturate the color by the specified percent (between 0-100), returning a new instance of Color.
-   *
-   * @param percent the percent to desaturate the Color
-   * @return a new desaturated version of this color
-   */
-  fun desaturate(percent: Int): Color {
-    val isHSLA = value.startsWith("hsl", ignoreCase = true)
-    val hsla = if (isHSLA) fromHSLANotation() else toRGBA().asHSLA()
-
-    val desaturation = hsla.saturation - (hsla.saturation * (normalizePercent(percent) / 100.0)).roundToInt()
-    val newHSLa = hsla.copy(saturation = normalizePercent(desaturation))
-    return if (isHSLA) {
-      hsla(newHSLa.hue, newHSLa.saturation, newHSLa.lightness, newHSLa.alpha)
-    } else {
-      with(newHSLa.asRGBA()) { rgba(red, green, blue, alpha) }
-    }
-  }
-
-  internal data class RGBA(
-    val red: Int,
-    val green: Int,
-    val blue: Int,
-    val alpha: Double = 1.0
-  ) {
-
-    // Algorithm adapted from http://www.niwa.nu/2013/05/math-behind-colorspace-conversions-rgb-hsl/
-    fun asHSLA(): HSLA {
-      // scale R, G, B values into 0..1 fractions
-      val r = red / 255.0
-      val g = green / 255.0
-      val b = blue / 255.0
-
-      val cMax = maxOf(r, g, b)
-      val cMin = minOf(r, g, b)
-      val chroma = cMax - cMin
-
-      val lg = normalizeFractionalPercent((cMax + cMin) / 2)
-      val s = if (chroma != 0.0) normalizeFractionalPercent(chroma / (1.0 - abs((2.0 * lg) - 1.0))) else 0.0
-      val h = when (cMax) {
-        cMin -> 0.0
-        r -> 60 * (((g - b) / chroma) % 6.0)
-        g -> 60 * (((b - r) / chroma) + 2)
-        b -> 60 * (((r - g) / chroma) + 4)
-        else -> error("Unexpected value for max") // theoretically unreachable bc maxOf(r, g, b) above
-      }
-
-      return HSLA(normalizeHue(h), (s * 100).roundToInt(), (lg * 100).roundToInt(), alpha)
-    }
-  }
-
-  internal data class HSLA(
-    val hue: Int,
-    val saturation: Int,
-    val lightness: Int,
-    val alpha: Double = 1.0
-  ) {
-
-    // Algorithm from W3C link referenced in class comment (section 4.2.4. HSL color values)
-    fun asRGBA(): RGBA {
-      fun hueToRGB(m1: Double, m2: Double, h: Double): Double {
-        val hu = if (h < 0) h + 1 else if (h > 1) h - 1 else h
-        return when {
-          (hu < 1.0 / 6) -> m1 + (m2 - m1) * 6 * hu
-          (hu < 1.0 / 2) -> m2
-          (hu < 2.0 / 3) -> m1 + ((m2 - m1) * 6 * (2.0 / 3 - hu))
-          else -> m1
-        }
-      }
-
-      if (saturation == 0) return RGBA(lightness, lightness, lightness)
-
-      // scale H, S, V values into 0..1 fractions
-      val h = (hue % 360.0) / 360.0
-      val s = saturation / 100.0
-      val lg = lightness / 100.0
-
-      val m2 = if (lg < 0.5) lg * (1 + s) else (lg + s - lg * s)
-      val m1 = 2 * lg - m2
-      val r = normalizeFractionalPercent(hueToRGB(m1, m2, h + (1.0 / 3)))
-      val g = normalizeFractionalPercent(hueToRGB(m1, m2, h))
-      val b = normalizeFractionalPercent(hueToRGB(m1, m2, h - (1.0 / 3)))
-      return RGBA((r * 255).roundToInt(), (g * 255).roundToInt(), (b * 255).roundToInt(), alpha)
-    }
-  }
-
-  internal fun fromHSLANotation(): HSLA {
-    val match = HSLA_REGEX.find(value)
-
-    fun getHSLParameter(index: Int) =
-      match?.groups?.get(index)?.value
-        ?: throw IllegalArgumentException("Expected hsl or hsla notation, got $value")
-
-    val hueShape = getHSLParameter(1)
-    val hue = normalizeHue(
-      when {
-        hueShape.endsWith("grad", true) -> hueShape.substringBefore("grad").toDouble() * (9.0 / 10)
-        hueShape.endsWith("rad", true) -> (hueShape.substringBefore("rad").toDouble() * 180) / PI
-        hueShape.endsWith("turn", true) -> hueShape.substringBefore("turn").toDouble() * 360.0
-        hueShape.endsWith("deg", true) -> hueShape.substringBefore("deg").toDouble()
-        else -> hueShape.toDouble()
-      }
-    )
-    val saturation = normalizePercent(getHSLParameter(2).toInt())
-    val lightness = normalizePercent(getHSLParameter(3).toInt())
-    val alpha = normalizeAlpha(match?.groups?.get(4)?.value?.toDouble() ?: 1.0)
-
-    return HSLA(hue, saturation, lightness, alpha)
-  }
-
-  internal fun fromRGBANotation(): RGBA {
-    val match = RGBA_REGEX.find(value)
-
-    fun getRGBParameter(index: Int): Int {
-      val group = match?.groups?.get(index)?.value
-        ?: throw IllegalArgumentException("Expected rgb or rgba notation, got $value")
-
-      return when {
-        (group.endsWith('%')) -> (normalizeFractionalPercent(group.substringBefore('%').toDouble() / 100.0) * 255.0).toInt()
-        else -> normalizeRGB(group.toInt())
-      }
-    }
-
-    val red = getRGBParameter(1)
-    val green = getRGBParameter(2)
-    val blue = getRGBParameter(3)
-    val alpha = normalizeAlpha(match?.groups?.get(4)?.value?.toDouble() ?: 1.0)
-
-    return RGBA(red, green, blue, alpha)
-  }
-
-  internal fun toRGBA(): RGBA {
-    val v = rgb ?: value
-    return when {
-      v.startsWith("rgb") -> fromRGBANotation()
-
-      // Matches #rgb
-      v.startsWith("#") && v.length == 4 -> RGBA(
-        "${v[1]}${v[1]}".toInt(16),
-        "${v[2]}${v[2]}".toInt(16),
-        "${v[3]}${v[3]}".toInt(16)
-      )
-
-      // Matches both #rrggbb and #rrggbbaa
-      v.startsWith("#") && (v.length == 7 || v.length == 9) -> RGBA(
-        (v.substring(1..2)).toInt(16),
-        (v.substring(3..4)).toInt(16),
-        (v.substring(5..6)).toInt(16)
-      )
-      else -> throw IllegalArgumentException("Only hexadecimal, rgb, and rgba notations are accepted, got $v")
     }
   }
 }
