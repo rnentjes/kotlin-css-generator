@@ -1,7 +1,19 @@
 package nl.astraeus.css.properties
 
+enum class MeasurementUoM {
+  NONE,
+  PX,
+  EM,
+  REM,
+  PC,
+  PRC,
+  CM,
+  FR
+}
+
 open class Measurement(
-  value: String
+  value: String,
+  val uom: MeasurementUoM = MeasurementUoM.NONE
 ) : CssProperty(value) {
 
   companion object {
@@ -11,9 +23,15 @@ open class Measurement(
     val normal = Measurement("normal")
 
     fun px(nr: Int) = if (nr == 0) {
-      Measurement("0")
+      Measurement(
+        "0",
+        MeasurementUoM.PX
+      )
     } else {
-      Measurement("${nr}px")
+      Measurement(
+        "${nr}px",
+        MeasurementUoM.PX
+      )
     }
 
     fun px(nr: Double) = nr.px
@@ -37,7 +55,8 @@ val Int.px: Measurement
       } else {
         "px"
       }
-    }"
+    }",
+    MeasurementUoM.PX
   )
 val Int.em: Measurement
   get() = Measurement(
@@ -47,7 +66,8 @@ val Int.em: Measurement
       } else {
         "em"
       }
-    }"
+    }",
+    MeasurementUoM.EM
   )
 val Int.rem: Measurement
   get() = Measurement(
@@ -57,31 +77,32 @@ val Int.rem: Measurement
       } else {
         "rem"
       }
-    }"
+    }",
+    MeasurementUoM.REM
   )
 val Int.prc: Measurement
-  get() = Measurement("${this}%")
+  get() = Measurement("${this}%", MeasurementUoM.PRC)
 val Int.pc: Measurement
-  get() = Measurement("${this}pc")
+  get() = Measurement("${this}pc", MeasurementUoM.PC)
 val Int.cm: Measurement
-  get() = Measurement("${this}cm")
+  get() = Measurement("${this}cm", MeasurementUoM.CM)
 val Int.fr: Measurement
-  get() = Measurement("${this}fr")
+  get() = Measurement("${this}fr", MeasurementUoM.FR)
 
 fun Int.px(): Measurement = Measurement.px(this)
 
 val Double.px: Measurement
-  get() = Measurement("${this}px")
+  get() = Measurement("${this}px", MeasurementUoM.PX)
 val Double.em: Measurement
-  get() = Measurement("${this}em")
+  get() = Measurement("${this}em", MeasurementUoM.EM)
 val Double.rem: Measurement
-  get() = Measurement("${this}rem")
+  get() = Measurement("${this}rem", MeasurementUoM.REM)
 val Double.prc: Measurement
-  get() = Measurement("${this}%")
+  get() = Measurement("${this}%", MeasurementUoM.PRC)
 val Double.pc: Measurement
-  get() = Measurement("${this}pc")
+  get() = Measurement("${this}pc", MeasurementUoM.PC)
 val Double.cm: Measurement
-  get() = Measurement("${this}cm")
+  get() = Measurement("${this}cm", MeasurementUoM.CM)
 
 fun Double.px(): Measurement = Measurement.px(this)
 
