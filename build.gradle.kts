@@ -1,10 +1,10 @@
 plugins {
-    kotlin("multiplatform") version "1.4.32"
+    kotlin("multiplatform") version "1.5.21"
     `maven-publish`
 }
 
 group = "nl.astraeus"
-version = "0.4.28"
+version = "0.4.29-SNAPSHOT"
 
 repositories {
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
@@ -73,11 +73,4 @@ publishing {
             }
         }
     }
-/*
-    publications {
-        val kotlinMultiplatform by getting {
-            artifactId = "kotlin-css-generator"
-        }
-    }
-*/
 }

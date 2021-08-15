@@ -180,27 +180,26 @@ class TestCssBuilder {
     println(css.generateCss())
   }
 
-
   @Test
   fun testOrWithComma() {
-    val css = style {
-      select("h1") {
-        color(Color.blue)
+    var excepted = false
+    try {
+      val css = style {
+        select("h1") {
+          color(Color.blue)
 
-        select("table") {
-          color(Color.red)
+          select("table") {
+            color(Color.red)
 
-          select("th, td") {
-            color(Color.green)
+            select("th, td") {
+              color(Color.green)
+            }
           }
         }
       }
-    }
 
-    var excepted = false
-    try {
       println(css.generateCss())
-    } catch(e: Exception) {
+    } catch (e: Exception) {
       excepted = true
       assertTrue {
         e is IllegalStateException
@@ -214,9 +213,8 @@ class TestCssBuilder {
     }
   }
 
-
   @Test
-  fun testAlhpaFunctions() {
+  fun testAlphaFunctions() {
     val hsl = hsl(1, 50, 50)
     val hsla = hsla(1, 50, 50, 0.5)
     val rgb = rgb(101, 111, 121)

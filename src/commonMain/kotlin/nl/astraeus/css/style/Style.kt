@@ -78,6 +78,7 @@ abstract class CssGenerator {
     warnOnRedeclaration: Boolean = true,
     allowCommaInSelector: Boolean = false
   ): String {
+    val blocks = mutableListOf<CssBlock>()
     val builder = StringBuilder()
 
     for (name in definitions.keys) {
@@ -235,6 +236,7 @@ class ValueDescriptionProvider(
 
 }
 
+fun txt(name: String): DescriptionProvider = ValueDescriptionProvider(name)
 fun id(name: String): DescriptionProvider = ValueDescriptionProvider("#$name")
 fun cls(name: String): DescriptionProvider = ValueDescriptionProvider(".$name")
 fun attr(name: String): DescriptionProvider = ValueDescriptionProvider("[$name]")
@@ -378,6 +380,10 @@ open class Style : CssGenerator() {
 
   fun hover(style: Css) {
     addStyle(":hover", style)
+  }
+
+  fun pseudo(selector: DescriptionProvider, style: Css) {
+    addStyle("::${selector.description()}", style)
   }
 
   fun visited(style: Css) {

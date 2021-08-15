@@ -296,7 +296,8 @@ class Color(value: String) : CssProperty(value) {
         }
       }
 
-      if (saturation == 0) return RGBA(lightness, lightness, lightness)
+      val lightness255 = lightness * 255 / 100
+      if (saturation == 0) return RGBA(lightness255, lightness255, lightness255)
 
       // scale H, S, V values into 0..1 fractions
       val h = (hue % 360.0) / 360.0
