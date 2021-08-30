@@ -10,4 +10,4 @@ pluginManagement {
 
 rootProject.name = "kotlin-css-generator"
 
-enableFeaturePreview("GRADLE_METADATA")
+//enableFeaturePreview("GRADLE_METADATA")

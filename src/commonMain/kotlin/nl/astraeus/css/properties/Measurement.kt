@@ -4,6 +4,7 @@ enum class MeasurementUoM {
   NONE,
   PX,
   EM,
+  REL,
   REM,
   PC,
   PRC,
@@ -16,11 +17,22 @@ open class Measurement(
   val uom: MeasurementUoM = MeasurementUoM.NONE
 ) : CssProperty(value) {
 
+  override fun toString(): String = super.value
+
   companion object {
     val auto = Measurement("auto")
     val initial = Measurement("initial")
     val inherit = Measurement("inherit")
     val normal = Measurement("normal")
+
+    fun fromString(value:String): Measurement = when {
+        value == "0" -> Measurement("0", MeasurementUoM.PX)
+        value.endsWith("px")  -> Measurement(value.slice(0..(value.length-2)), MeasurementUoM.PX)
+      value.endsWith("rel")  -> Measurement(value.slice(0..(value.length-3)), MeasurementUoM.REL)
+        else -> {
+          TODO("Unable to parse $value")
+        }
+      }
 
     fun px(nr: Int) = if (nr == 0) {
       Measurement(

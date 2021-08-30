@@ -1,5 +1,6 @@
 package nl.astraeus.css
 
+import nl.astraeus.css.properties.BoxSizing
 import nl.astraeus.css.properties.Color
 import nl.astraeus.css.properties.Count
 import nl.astraeus.css.properties.Display
@@ -23,6 +24,32 @@ class TestCssBuilder {
   @Test
   fun testBuilder() {
     val css = style {
+
+      select("*", "*::before", "*::after") {
+        boxSizing(BoxSizing.borderBox)
+      }
+
+      select("html") {
+        transition("background-color 1s ease")
+
+        margin(0.px)
+        padding(0.px)
+
+        focus {
+          backgroundColor(Color.blue)
+        }
+      }
+
+      select("body") {
+        margin(0.px)
+
+        padding(0.px)
+
+        focus {
+          backgroundColor(Color.blue)
+        }
+        transition("background-color 1s ease")
+      }
 
       select(".test") {
         top(10.px)
@@ -77,7 +104,7 @@ class TestCssBuilder {
       }
     }
 
-    println(css.generateCss())
+    println(css.generateCss(combineEqualBlocks = true, sortProperties = true))
   }
 
   @Test

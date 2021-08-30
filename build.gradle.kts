@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.5.21"
+    kotlin("multiplatform") version "1.5.30"
     `maven-publish`
 }
 
@@ -7,9 +7,9 @@ group = "nl.astraeus"
 version = "0.4.29-SNAPSHOT"
 
 repositories {
-    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
     mavenLocal()
     mavenCentral()
+    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
 }
 
 kotlin {

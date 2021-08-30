@@ -61,32 +61,140 @@ abstract class CssGenerator {
     return "$paddedName$builder;\n"
   }
 
-  fun generatePropertyCss(indent: String): String {
+  fun generatePropertyCss(
+    indent: String,
+    sortProperties: Boolean
+  ): String {
     val builder = StringBuilder()
 
-    for ((name, prop) in props) {
-      builder.append(propertyCss(indent, name, prop))
+    if (sortProperties) {
+      for (name in props.keys.sorted()) {
+        val prop = props[name] ?: error("$name not found in properties after sorting!")
+
+        builder.append(propertyCss(indent, name, prop))
+      }
+    } else {
+      for ((name, prop) in props) {
+        builder.append(propertyCss(indent, name, prop))
+      }
     }
 
     return builder.toString()
   }
 
   open fun generateCss(
+    indent: String = "",
+    minified: Boolean = false,
+    warnOnRedeclaration: Boolean = true,
+    allowCommaInSelector: Boolean = false,
+    combineEqualBlocks: Boolean = false,
+    sortProperties: Boolean = false
+  ): String {
+    val blocks = generateCssBlocks(
+      indent = indent,
+      minified = minified,
+      warnOnRedeclaration = warnOnRedeclaration,
+      allowCommaInSelector = allowCommaInSelector,
+      sortProperties = sortProperties
+    )
+
+    val builder = StringBuilder()
+
+    fun StringBuilder.generateBlock(
+      indent: String,
+      selectors: List<String>,
+      block: CssBlock?
+    ) {
+      if (selectors.isNotEmpty() && block != null) {
+        append(indent)
+        append(selectors.joinToString(",\n"))
+        append(" {\n")
+        append(block.content)
+        append(indent)
+        append("}\n\n")
+      }
+    }
+
+    if (!combineEqualBlocks) {
+      var first = true
+      val selectors = mutableListOf<String>()
+      var lastBlock: CssBlock? = null
+
+      for (block in blocks) {
+        if (first) {
+          first = false
+          selectors.add(block.selector)
+          lastBlock = block
+        } else {
+          lastBlock = if (lastBlock != null && lastBlock.content == block.content) {
+            selectors.add(block.selector)
+            block
+          } else {
+            builder.generateBlock(indent, selectors, lastBlock)
+
+            selectors.clear()
+            selectors.add(block.selector)
+            block
+          }
+        }
+      }
+
+      builder.generateBlock(indent, selectors, lastBlock)
+    } else {
+      val blockHashes: MutableMap<Int, MutableList<CssBlock>> = mutableMapOf()
+
+      for (block in blocks) {
+        blockHashes.getOrPut(block.content.hashCode()) {
+          mutableListOf()
+        }.add(block)
+      }
+      val done = mutableSetOf<Int>()
+
+      for(block in blocks) {
+        val hashCode = block.content.hashCode()
+
+        if (!done.contains(hashCode)) {
+          blockHashes[hashCode]?.let {
+            val slctrs = it.map { blk ->
+              blk.selector
+            }
+            builder.generateBlock(indent, slctrs, block)
+            done.add(hashCode)
+          }
+        }
+      }
+    }
+
+    return if (minified) {
+      val stripped = StringBuilder()
+      val skip = arrayOf(' ', '\t', '\n', '\r')
+      for (char in builder) {
+        if (!skip.contains(char)) {
+          stripped.append(char)
+        }
+      }
+      stripped.toString()
+    } else {
+      builder.toString()
+    }
+  }
+
+  open fun generateCssBlocks(
     namespace: String = "",
     indent: String = "",
     minified: Boolean = false,
     warnOnRedeclaration: Boolean = true,
-    allowCommaInSelector: Boolean = false
-  ): String {
+    allowCommaInSelector: Boolean = false,
+    sortProperties: Boolean = false
+  ): List<CssBlock> {
     val blocks = mutableListOf<CssBlock>()
-    val builder = StringBuilder()
 
     for (name in definitions.keys) {
       val props = definitions[name]!!
       val css = StringBuilder()
 
       if (warnOnRedeclaration && props.size > 1) {
-        css.append("/* style '$name' is defined ${props.size} times! */\n")
+        css.append("  $indent/* style '$name' is defined ${props.size} times! */\n")
       }
 
       val finalStyle = Style()
@@ -95,22 +203,24 @@ abstract class CssGenerator {
         prop(finalStyle)
       }
 
-      css.append(finalStyle.generatePropertyCss("  $indent"))
+      css.append(finalStyle.generatePropertyCss("  $indent", sortProperties))
 
       if (css.isNotBlank()) {
+        val builder = StringBuilder()
+
         check (allowCommaInSelector || !name.contains(',')) {
           "Comma is not allowed in selector (option is set in generateCss call)"
         }
 
-        builder.append("\n$namespace$name".trim())
+        //builder.append("\n$namespace$name".trim())
 
         //builder.append("  $indent")
-        builder.append(" {\n")
+        //builder.append(" {\n")
 
         finalStyle.fontFace?.let { ff ->
           builder.append("  $indent")
           builder.append("@font-face {\n")
-          builder.append(ff.generatePropertyCss("    $indent"))
+          builder.append(ff.generatePropertyCss("    $indent", sortProperties))
           builder.append("  $indent")
           builder.append("}\n")
         }
@@ -134,7 +244,7 @@ abstract class CssGenerator {
 
                 style(finalStyle)
 
-                builder.append(finalStyle.generatePropertyCss("      $indent"))
+                builder.append(finalStyle.generatePropertyCss("      $indent", sortProperties))
 
                 builder.append("    $indent")
                 builder.append("}\n")
@@ -147,13 +257,21 @@ abstract class CssGenerator {
         }
 
         builder.append(css)
-        builder.append("}\n\n")
+        //builder.append("}\n\n")
+
+        blocks.add(CssBlock(
+          "$namespace$name".trim(),
+          builder.toString()
+        ))
       }
 
-      builder.append(finalStyle.generateCss(
+      blocks.addAll(finalStyle.generateCssBlocks(
         "$namespace$name".trim(),
         indent,
-        allowCommaInSelector = allowCommaInSelector
+        minified = minified,
+        allowCommaInSelector = allowCommaInSelector,
+        warnOnRedeclaration = warnOnRedeclaration,
+        sortProperties = sortProperties
       ))
     }
 
@@ -162,24 +280,22 @@ abstract class CssGenerator {
         mq.keys.sorted().forEach { mediaName ->
           val css = mq[mediaName]
 
-          builder.append(indent)
-          builder.append("@media ")
-          builder.append(mediaName)
-          builder.append(" {\n")
           css?.let { css ->
             val mediaStyle = ConditionalStyle()
 
             css(mediaStyle)
 
-            builder.append(mediaStyle.generateCss(
-              "",
-              "  $indent",
-              allowCommaInSelector = allowCommaInSelector
+            blocks.add(CssBlock(
+              "$indent@media $mediaName".trim(),
+              mediaStyle.generateCss(
+                "  $indent",
+                minified = minified,
+                allowCommaInSelector = allowCommaInSelector,
+                warnOnRedeclaration = warnOnRedeclaration,
+                sortProperties = sortProperties
+              )
             ))
           }
-
-          builder.append(indent)
-          builder.append("}\n")
         }
       }
 
@@ -187,40 +303,27 @@ abstract class CssGenerator {
         mq.keys.sorted().forEach { mediaName ->
           val css = mq[mediaName]
 
-          builder.append(indent)
-          builder.append("@supports ")
-          builder.append(mediaName)
-          builder.append(" {\n")
           css?.let { css ->
             val mediaStyle = ConditionalStyle()
 
             css(mediaStyle)
 
-            builder.append(mediaStyle.generateCss(
-              "",
-              "  $indent",
-              allowCommaInSelector = allowCommaInSelector
+            blocks.add(CssBlock(
+              "$indent@supports $mediaName".trim(),
+              mediaStyle.generateCss(
+                "  $indent",
+                minified = minified,
+                allowCommaInSelector = allowCommaInSelector,
+                warnOnRedeclaration = warnOnRedeclaration,
+                sortProperties = sortProperties
+              )
             ))
           }
-
-          builder.append(indent)
-          builder.append("}\n")
         }
       }
     }
 
-    return if (minified) {
-      val stripped = StringBuilder()
-      val skip = arrayOf(' ', '\t', '\n', '\r')
-      for (char in builder) {
-        if (!skip.contains(char)) {
-          stripped.append(char)
-        }
-      }
-      stripped.toString()
-    } else {
-      builder.toString()
-    }
+    return blocks
   }
 }
 
@@ -382,7 +485,19 @@ open class Style : CssGenerator() {
     addStyle(":hover", style)
   }
 
-  fun pseudo(selector: DescriptionProvider, style: Css) {
+  fun firstChild(style: Css) {
+    addStyle(":first-child", style)
+  }
+
+  fun lastChild(style: Css) {
+    addStyle(":last-child", style)
+  }
+
+  fun pseudoElement(selector: DescriptionProvider, style: Css) {
+    addStyle(":${selector.description()}", style)
+  }
+
+  fun pseudoChild(selector: DescriptionProvider, style: Css) {
     addStyle("::${selector.description()}", style)
   }
 
@@ -486,6 +601,10 @@ open class Style : CssGenerator() {
     props["background-image"] = prp(image)
   }
 
+  fun backgroundImage(value: String) {
+    props["background-image"] = prp(value)
+  }
+
   fun backgroundOrigin(origin: ClipOrigin) {
     props["background-origin"] = prp(origin)
   }
@@ -506,6 +625,14 @@ open class Style : CssGenerator() {
     props["border"] = prp(border)
   }
 
+  fun border(
+    width: Measurement,
+    style: BorderStyle,
+    color: Color
+  ) {
+    props["border"] = prp(width, style, color)
+  }
+
   fun borderBottom(borderBottom: String) {
     props["border-bottom"] = prp(borderBottom)
   }
@@ -514,8 +641,16 @@ open class Style : CssGenerator() {
     props["border-bottom-color"] = prp(color)
   }
 
+  fun borderBottomLeftRadius(vararg radius: Measurement) {
+    props["border-bottom-left-radius"] = prp(*radius)
+  }
+
   fun borderBottomLeftRadius(vararg radius: BorderRadius) {
     props["border-bottom-left-radius"] = prp(*radius)
+  }
+
+  fun borderBottomRightRadius(vararg radius: Measurement) {
+    props["border-bottom-right-radius"] = prp(*radius)
   }
 
   fun borderBottomRightRadius(vararg radius: BorderRadius) {
@@ -656,8 +791,16 @@ open class Style : CssGenerator() {
     props["border-top-color"] = prp(color)
   }
 
+  fun borderTopLeftRadius(radius: Measurement) {
+    props["border-top-left-radius"] = prp(radius)
+  }
+
   fun borderTopLeftRadius(radius: BorderRadius) {
     props["border-top-left-radius"] = prp(radius)
+  }
+
+  fun borderTopRightRadius(radius: Measurement) {
+    props["border-top-right-radius"] = prp(radius)
   }
 
   fun borderTopRightRadius(radius: BorderRadius) {
