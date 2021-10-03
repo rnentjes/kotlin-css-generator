@@ -645,15 +645,7 @@ open class Style : CssGenerator() {
     props["border-bottom-left-radius"] = prp(*radius)
   }
 
-  fun borderBottomLeftRadius(vararg radius: BorderRadius) {
-    props["border-bottom-left-radius"] = prp(*radius)
-  }
-
   fun borderBottomRightRadius(vararg radius: Measurement) {
-    props["border-bottom-right-radius"] = prp(*radius)
-  }
-
-  fun borderBottomRightRadius(vararg radius: BorderRadius) {
     props["border-bottom-right-radius"] = prp(*radius)
   }
 
@@ -795,15 +787,7 @@ open class Style : CssGenerator() {
     props["border-top-left-radius"] = prp(radius)
   }
 
-  fun borderTopLeftRadius(radius: BorderRadius) {
-    props["border-top-left-radius"] = prp(radius)
-  }
-
   fun borderTopRightRadius(radius: Measurement) {
-    props["border-top-right-radius"] = prp(radius)
-  }
-
-  fun borderTopRightRadius(radius: BorderRadius) {
     props["border-top-right-radius"] = prp(radius)
   }
 

@@ -1,7 +1,7 @@
 # Css generator like less/sass in kotlin multiplatform
 
 This library is for generating css from a kotlin dsl.
-It is meant to be used runtime to dynamically generate css. 
+It can be used as an alternative to less/sass or as a runtime library to generate css on-the-fly. 
 
 Tools like less and sass are often used as a build step and take some time.
 This library is meant to be fast enough to generate the css on the fly either from the server or directly in the browser.
@@ -31,6 +31,12 @@ Examples:
     }
 ```
 
+To generate the css call get generateCss function:
+
+```kotlin
+    val cssString: String = css.generateCss()
+```
+
 Result:
 
 ```css
@@ -49,9 +55,22 @@ Result:
 }
 ```
 
+There are several options when generating the css, for example minified:
+
+
+```kotlin
+    val cssString: String = css.generateCss(minified = true)
+```
+
+Result:
+
+```css
+.button{padding:5px;}.buttona{color:hsla(0,50%,50%,1.0);background-color:white;}.buttona:hover{color:hsla(0,50%,55%,1.0);background-color:rgba(229,229,229,1.0);}
+```
+
 ## Mixins
 
-As it's just kotlin code includes, mixins etc. are just functions calls.
+As it's all just kotlin code, includes and mixins etc. are just functions calls.
 
 ```kotlin
    fun Style.borderStyles(borderWidth: Measurement = 2.px) {
@@ -99,7 +118,26 @@ a {
 }
 ```
 
-# Measurements
+Giving the option combineEqualBlocks to the generateCss call will combine the a and .button blocks with the following result:
+
+```css
+a,
+.button {
+  border-width:                 2px;
+  border-color:                 aquamarine;
+  border-style:                 solid;
+  color:                        white;
+}
+
+.btn-primary {
+  border-width:                 3px;
+  border-color:                 aquamarine;
+  border-style:                 solid;
+  color:                        blue;
+}
+```
+
+## Measurements
 
 Sizes and widths are given in measurements, there are extension variables to help with these:
 

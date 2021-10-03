@@ -3,3 +3,9 @@ kotlin.js.compiler=both
 
 nexusUsername=deployment
 nexusPassword=
+
+signingKeyId=
+signingPassword=
+signingSecretKeyRingFile=
+ossrhUsername=
+ossrhPassword=

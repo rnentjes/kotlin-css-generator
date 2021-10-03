@@ -1,23 +1,5 @@
 package nl.astraeus.css.properties
 
-class BorderRadius(
-  value: String
-) : CssProperty(value) {
-  companion object {
-    fun px(nr: Int) = BorderRadius("${nr}px")
-    fun em(nr: Int) = BorderRadius("${nr}em")
-    fun em(nr: Double) = BorderRadius("${nr}em")
-    fun perc(nr: Int) = BorderRadius("${nr}%")
-    fun perc(nr: Double) = BorderRadius("${nr}%")
-    fun pc(nr: Int) = BorderRadius("${nr}pc")
-    fun pc(nr: Double) = BorderRadius("${nr}pc")
-    fun cm(nr: Int) = BorderRadius("${nr}cm")
-    fun cm(nr: Double) = BorderRadius("${nr}cm")
-    val initial = BorderRadius("initial")
-    val inherit = BorderRadius("inherit")
-  }
-}
-
 class BorderStyle(
   value: String
 ) : CssProperty(value) {

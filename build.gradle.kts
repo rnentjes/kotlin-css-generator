@@ -1,10 +1,11 @@
 plugins {
-    kotlin("multiplatform") version "1.5.30"
+    kotlin("multiplatform") version "1.5.31"
     `maven-publish`
+    signing
 }
 
 group = "nl.astraeus"
-version = "0.4.29-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenLocal()
@@ -46,6 +47,23 @@ kotlin {
     }
 }
 
+extra["PUBLISH_GROUP_ID"] = "nl.astraeus"
+extra["PUBLISH_VERSION"] = "1.0.0"
+extra["PUBLISH_ARTIFACT_ID"] = "kotlin-css-generator"
+
+// Stub secrets to let the project sync and build without the publication values set up
+val signingKeyId: String by project
+val signingPassword: String by project
+val signingSecretKeyRingFile: String by project
+val ossrhUsername: String by project
+val ossrhPassword: String by project
+
+extra["signing.keyId"] = signingKeyId
+extra["signing.password"] = signingPassword
+extra["signing.secretKeyRingFile"] = signingSecretKeyRingFile
+extra["ossrhUsername"] = ossrhUsername
+extra["ossrhPassword"] = ossrhPassword
+
 publishing {
     repositories {
         maven {
@@ -72,5 +90,49 @@ publishing {
                 password = nexusPassword
             }
         }
+         maven {
+            name = "sonatype"
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
     }
+
+    // Configure all publications
+    publications.withType<MavenPublication> {
+
+        // Stub javadoc.jar artifact
+        //artifact(javadocJar.get())
+
+        // Provide artifacts information requited by Maven Central
+        pom {
+            name.set("kotlin-css-generator")
+            description.set("Kotlin css generator")
+            url.set("https://github.com/rnentjes/kotlin-css-generator")
+
+            licenses {
+                license {
+                    name.set("MIT")
+                    url.set("https://opensource.org/licenses/MIT")
+                }
+            }
+            developers {
+                developer {
+                    id.set("rnentjes")
+                    name.set("Rien Nentjes")
+                    email.set("info@nentjes.com")
+                }
+            }
+            scm {
+                url.set("https://github.com/rnentjes/kotlin-css-generator")
+            }
+        }
+    }
+
+}
+
+signing {
+    sign(publishing.publications)
 }
