@@ -2,13 +2,13 @@ plugins {
     kotlin("multiplatform") version "1.5.31"
     `maven-publish`
     signing
+    id("org.jetbrains.dokka") version "1.5.31"
 }
 
 group = "nl.astraeus"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-eap") }
 }
@@ -48,7 +48,7 @@ kotlin {
 }
 
 extra["PUBLISH_GROUP_ID"] = "nl.astraeus"
-extra["PUBLISH_VERSION"] = "1.0.0"
+extra["PUBLISH_VERSION"] = "1.0.1"
 extra["PUBLISH_ARTIFACT_ID"] = "kotlin-css-generator"
 
 // Stub secrets to let the project sync and build without the publication values set up
@@ -64,12 +64,16 @@ extra["signing.secretKeyRingFile"] = signingSecretKeyRingFile
 extra["ossrhUsername"] = ossrhUsername
 extra["ossrhPassword"] = ossrhPassword
 
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     repositories {
         maven {
             name = "releases"
             // change to point to your repo, e.g. http://my.org/repo
-            url = uri("http://nexus.astraeus.nl/nexus/content/repositories/releases")
+            url = uri("https://nexus.astraeus.nl/nexus/content/repositories/releases")
             credentials {
                 val nexusUsername: String by project
                 val nexusPassword: String by project
@@ -81,7 +85,7 @@ publishing {
         maven {
             name = "snapshots"
             // change to point to your repo, e.g. http://my.org/repo
-            url = uri("http://nexus.astraeus.nl/nexus/content/repositories/snapshots")
+            url = uri("https://nexus.astraeus.nl/nexus/content/repositories/snapshots")
             credentials {
                 val nexusUsername: String by project
                 val nexusPassword: String by project
@@ -90,9 +94,9 @@ publishing {
                 password = nexusPassword
             }
         }
-         maven {
+        maven {
             name = "sonatype"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
             credentials {
                 username = ossrhUsername
                 password = ossrhPassword
@@ -102,9 +106,8 @@ publishing {
 
     // Configure all publications
     publications.withType<MavenPublication> {
-
         // Stub javadoc.jar artifact
-        //artifact(javadocJar.get())
+        artifact(javadocJar.get())
 
         // Provide artifacts information requited by Maven Central
         pom {
@@ -130,7 +133,6 @@ publishing {
             }
         }
     }
-
 }
 
 signing {

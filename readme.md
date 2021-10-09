@@ -6,6 +6,22 @@ It can be used as an alternative to less/sass or as a runtime library to generat
 Tools like less and sass are often used as a build step and take some time.
 This library is meant to be fast enough to generate the css on the fly either from the server or directly in the browser.
 
+## Usage
+
+Include in build.gradle.kts:
+
+```kotlin
+  repositories {
+    mavenCentral()
+  }
+
+  val commonMain by getting {
+    dependencies {
+      api("nl.astraeus:kotlin-css-generator:1.0.1")
+    }
+  }
+```
+
 Examples:
 
 ## Nesting / colors / variables
