@@ -35,7 +35,12 @@ abstract class CssGenerator {
 
   abstract fun getValidator(name: String): List<Validator>?
 
-  private fun propertyCss(indent: String, name: String, props: List<CssProperty>): String {
+  private fun propertyCss(
+    indent: String,
+    name: String,
+    minified: Boolean,
+    props: List<CssProperty>
+  ): String {
     val builder = StringBuilder()
 
     getValidator(name)?.forEach {
@@ -52,18 +57,23 @@ abstract class CssGenerator {
     }
 
     val paddedName = StringBuilder()
-    paddedName.append(indent)
+    if (!minified) {
+      paddedName.append(indent)
+    }
     paddedName.append(name)
     paddedName.append(":")
-    while (paddedName.length < 32) {
-      paddedName.append(' ')
+    if (!minified) {
+      while (paddedName.length < 32) {
+        paddedName.append(' ')
+      }
     }
-    return "$paddedName$builder;\n"
+    return "$paddedName$builder;"
   }
 
   fun generatePropertyCss(
     indent: String,
-    sortProperties: Boolean
+    sortProperties: Boolean,
+    minified: Boolean
   ): String {
     val builder = StringBuilder()
 
@@ -71,11 +81,17 @@ abstract class CssGenerator {
       for (name in props.keys.sorted()) {
         val prop = props[name] ?: error("$name not found in properties after sorting!")
 
-        builder.append(propertyCss(indent, name, prop))
+        builder.append(propertyCss(indent, name, minified, prop))
+        if (!minified) {
+          builder.append("\n")
+        }
       }
     } else {
       for ((name, prop) in props) {
-        builder.append(propertyCss(indent, name, prop))
+        builder.append(propertyCss(indent, name, minified, prop))
+        if (!minified) {
+          builder.append("\n")
+        }
       }
     }
 
@@ -107,11 +123,20 @@ abstract class CssGenerator {
     ) {
       if (selectors.isNotEmpty() && block != null) {
         append(indent)
-        append(selectors.joinToString(",\n"))
-        append(" {\n")
+        append(selectors.joinToString(if (minified) { "," } else { ",\n" }))
+        if (!minified) {
+          append(" ")
+        }
+        append("{")
+        if (!minified) {
+          append("\n")
+        }
         append(block.content)
         append(indent)
-        append("}\n\n")
+        append("}")
+        if (!minified) {
+          append("\n\n")
+        }
       }
     }
 
@@ -165,18 +190,7 @@ abstract class CssGenerator {
       }
     }
 
-    return if (minified) {
-      val stripped = StringBuilder()
-      val skip = arrayOf(' ', '\t', '\n', '\r')
-      for (char in builder) {
-        if (!skip.contains(char)) {
-          stripped.append(char)
-        }
-      }
-      stripped.toString()
-    } else {
-      builder.toString()
-    }
+    return builder.toString()
   }
 
   open fun generateCssBlocks(
@@ -203,7 +217,7 @@ abstract class CssGenerator {
         prop(finalStyle)
       }
 
-      css.append(finalStyle.generatePropertyCss("  $indent", sortProperties))
+      css.append(finalStyle.generatePropertyCss("  $indent", sortProperties, minified))
 
       if (css.isNotBlank()) {
         val builder = StringBuilder()
@@ -218,40 +232,79 @@ abstract class CssGenerator {
         //builder.append(" {\n")
 
         finalStyle.fontFace?.let { ff ->
-          builder.append("  $indent")
-          builder.append("@font-face {\n")
-          builder.append(ff.generatePropertyCss("    $indent", sortProperties))
-          builder.append("  $indent")
-          builder.append("}\n")
+          if (!minified) {
+            builder.append("  $indent")
+          }
+          builder.append("@font-face")
+          if (!minified) {
+            builder.append(" ")
+          }
+          builder.append("{")
+          if (!minified) {
+            builder.append("\n")
+          }
+          builder.append(ff.generatePropertyCss("    $indent", sortProperties, minified))
+          if (!minified) {
+            builder.append("  $indent")
+          }
+          builder.append("}")
+          if (!minified) {
+            builder.append("\n")
+          }
         }
 
         finalStyle.keyFrames.let { kf ->
           kf.keys.sorted().forEach { frameName ->
             val css = kf[frameName]
 
-            builder.append("  $indent")
+            if (!minified) {
+              builder.append("  $indent")
+            }
             builder.append("@keyframes ")
             builder.append(frameName)
-            builder.append(" {\n")
+            if (!minified) {
+              builder.append(" ")
+            }
+            builder.append("{")
+            if (!minified) {
+              builder.append("\n")
+            }
             css?.let { css ->
               for ((nr, style) in css.frames) {
-                builder.append("    $indent")
+                if (!minified) {
+                  builder.append("    $indent")
+                }
                 builder.append("${nr}% ")
-                builder.append("    $indent")
-                builder.append("{\n")
+                if (!minified) {
+                  builder.append("    $indent")
+                }
+                builder.append("{")
+                if (!minified) {
+                  builder.append("\n")
+                }
 
                 val finalStyle = Style()
 
                 style(finalStyle)
 
-                builder.append(finalStyle.generatePropertyCss("      $indent", sortProperties))
+                builder.append(finalStyle.generatePropertyCss("      $indent", sortProperties, minified))
 
-                builder.append("    $indent")
-                builder.append("}\n")
+                if (!minified) {
+                  builder.append("    $indent")
+                }
+                builder.append("}")
+                if (!minified) {
+                  builder.append("\n")
+                }
               }
 
-              builder.append("  $indent")
-              builder.append("}\n")
+              if (!minified) {
+                builder.append("  $indent")
+              }
+              builder.append("}")
+              if (!minified) {
+                builder.append("\n")
+              }
             }
           }
         }

@@ -3,10 +3,11 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version "1.5.31"
+    id("com.adarshr.test-logger") version "3.0.0"
 }
 
 group = "nl.astraeus"
-version = "1.0.1"
+version = "1.0.2"
 
 repositories {
     mavenCentral()
@@ -47,8 +48,12 @@ kotlin {
     }
 }
 
+testlogger {
+    showStandardStreams = true
+}
+
 extra["PUBLISH_GROUP_ID"] = "nl.astraeus"
-extra["PUBLISH_VERSION"] = "1.0.1"
+extra["PUBLISH_VERSION"] = "1.0.2"
 extra["PUBLISH_ARTIFACT_ID"] = "kotlin-css-generator"
 
 // Stub secrets to let the project sync and build without the publication values set up
