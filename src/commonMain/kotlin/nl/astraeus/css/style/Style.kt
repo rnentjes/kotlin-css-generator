@@ -419,9 +419,7 @@ fun attrStartsWith(name: DescriptionProvider, value: String): DescriptionProvide
   ValueDescriptionProvider("[${name.description()}^=$value]")
 
 @CssTagMarker
-open class Style : CssGenerator() {
-  var fontFace: FontFace? = null
-  var keyFrames: MutableMap<String, KeyFrames> = mutableMapOf()
+open class InlineStyle : CssGenerator() {
 
   private val validators = mapOf<String, List<Validator>>(
     "background-position" to listOf(InitialInheritSingleValue()),
@@ -446,82 +444,6 @@ open class Style : CssGenerator() {
     definitions[selector]?.add(style)
   }
 
-  /**
-   * like the scss &
-   * @param selector blabla
-   */
-  fun and(vararg selectors: DescriptionProvider, style: Css) {
-    for (selector in selectors) {
-      addStyle(selector.description(), style)
-    }
-  }
-
-  fun and(vararg selectors: String, style: Css) {
-    for (selector in selectors) {
-      addStyle(selector, style)
-    }
-  }
-
-  fun select(vararg selectors: DescriptionProvider, style: Css) {
-    for (selector in selectors) {
-      addStyle(" ${selector.description()}", style)
-    }
-  }
-
-  fun select(vararg selectors: String, style: Css) {
-    for (selector in selectors) {
-      addStyle(" $selector", style)
-    }
-  }
-
-  fun descendant(vararg descNames: DescriptionProvider, style: Css) {
-    for (descName in descNames) {
-      addStyle(" ${descName.description()}", style)
-    }
-  }
-
-  fun descendant(vararg descNames: String, style: Css) {
-    for (descName in descNames) {
-      addStyle(" $descName", style)
-    }
-  }
-
-  fun child(vararg childNames: DescriptionProvider, style: Css) {
-    for (childName in childNames) {
-      addStyle(" > ${childName.description()}", style)
-    }
-  }
-
-  fun child(vararg childNames: String, style: Css) {
-    for (childName in childNames) {
-      addStyle(" > $childName", style)
-    }
-  }
-
-  fun sibling(vararg childNames: DescriptionProvider, style: Css) {
-    for (childName in childNames) {
-      addStyle(" ~ ${childName.description()}", style)
-    }
-  }
-
-  fun sibling(vararg childNames: String, style: Css) {
-    for (childName in childNames) {
-      addStyle(" ~ $childName", style)
-    }
-  }
-
-  fun adjSibling(vararg childNames: DescriptionProvider, style: Css) {
-    for (childName in childNames) {
-      addStyle(" + ${childName.description()}", style)
-    }
-  }
-
-  fun adjSibling(vararg childNames: String, style: Css) {
-    for (childName in childNames) {
-      addStyle(" + $childName", style)
-    }
-  }
-
   fun active(style: Css) {
     addStyle(":active", style)
   }
@@ -538,28 +460,8 @@ open class Style : CssGenerator() {
     addStyle(":hover", style)
   }
 
-  fun firstChild(style: Css) {
-    addStyle(":first-child", style)
-  }
-
-  fun lastChild(style: Css) {
-    addStyle(":last-child", style)
-  }
-
-  fun pseudoElement(selector: DescriptionProvider, style: Css) {
-    addStyle(":${selector.description()}", style)
-  }
-
-  fun pseudoChild(selector: DescriptionProvider, style: Css) {
-    addStyle("::${selector.description()}", style)
-  }
-
   fun visited(style: Css) {
     addStyle(":visited", style)
-  }
-
-  fun not(selector: DescriptionProvider, style: Css) {
-    addStyle(":not(${selector.description()})", style)
   }
 
   fun plain(name: String, value: String) {
@@ -1024,12 +926,6 @@ open class Style : CssGenerator() {
     props["font"] = prp(font)
   }
 
-  fun fontFace(face: FontFace.() -> Unit) {
-    fontFace = FontFace()
-
-    face.invoke(fontFace!!)
-  }
-
   fun fontFamily(font: String) {
     props["font-family"] = prp(font)
   }
@@ -1185,24 +1081,12 @@ open class Style : CssGenerator() {
     props["hyphens"] = prp(hyphens)
   }
 
-  fun import(style: Css) {
-    style(this)
-  }
-
   fun isolation(isolation: Isolation) {
     props["isolation"] = prp(isolation)
   }
 
   fun justifyContent(content: JustifyContent) {
     props["justify-content"] = prp(content)
-  }
-
-  fun keyFrames(animationName: String, frames: KeyFrames.() -> Unit) {
-    val frameCss = KeyFrames()
-
-    frames.invoke(frameCss)
-
-    keyFrames[animationName] = frameCss
   }
 
   fun left(left: Measurement) {
@@ -1622,6 +1506,130 @@ open class Style : CssGenerator() {
 
   fun zIndex(zIndex: ZIndex) {
     props["z-index"] = prp(zIndex)
+  }
+}
+
+@CssTagMarker
+open class Style : InlineStyle() {
+  var fontFace: FontFace? = null
+  var keyFrames: MutableMap<String, KeyFrames> = mutableMapOf()
+
+  private fun addStyle(selector: String, style: Css) {
+    definitions[selector] = definitions[selector] ?: mutableListOf()
+    definitions[selector]?.add(style)
+  }
+
+  /**
+   * like the scss &
+   */
+  fun and(vararg selectors: DescriptionProvider, style: Css) {
+    for (selector in selectors) {
+      addStyle(selector.description(), style)
+    }
+  }
+
+  fun and(vararg selectors: String, style: Css) {
+    for (selector in selectors) {
+      addStyle(selector, style)
+    }
+  }
+
+  fun select(vararg selectors: DescriptionProvider, style: Css) {
+    for (selector in selectors) {
+      addStyle(" ${selector.description()}", style)
+    }
+  }
+
+  fun select(vararg selectors: String, style: Css) {
+    for (selector in selectors) {
+      addStyle(" $selector", style)
+    }
+  }
+
+  fun descendant(vararg descNames: DescriptionProvider, style: Css) {
+    for (descName in descNames) {
+      addStyle(" ${descName.description()}", style)
+    }
+  }
+
+  fun descendant(vararg descNames: String, style: Css) {
+    for (descName in descNames) {
+      addStyle(" $descName", style)
+    }
+  }
+
+  fun child(vararg childNames: DescriptionProvider, style: Css) {
+    for (childName in childNames) {
+      addStyle(" > ${childName.description()}", style)
+    }
+  }
+
+  fun child(vararg childNames: String, style: Css) {
+    for (childName in childNames) {
+      addStyle(" > $childName", style)
+    }
+  }
+
+  fun sibling(vararg childNames: DescriptionProvider, style: Css) {
+    for (childName in childNames) {
+      addStyle(" ~ ${childName.description()}", style)
+    }
+  }
+
+  fun sibling(vararg childNames: String, style: Css) {
+    for (childName in childNames) {
+      addStyle(" ~ $childName", style)
+    }
+  }
+
+  fun adjSibling(vararg childNames: DescriptionProvider, style: Css) {
+    for (childName in childNames) {
+      addStyle(" + ${childName.description()}", style)
+    }
+  }
+
+  fun adjSibling(vararg childNames: String, style: Css) {
+    for (childName in childNames) {
+      addStyle(" + $childName", style)
+    }
+  }
+
+  fun firstChild(style: Css) {
+    addStyle(":first-child", style)
+  }
+
+  fun lastChild(style: Css) {
+    addStyle(":last-child", style)
+  }
+
+  fun pseudoElement(selector: DescriptionProvider, style: Css) {
+    addStyle(":${selector.description()}", style)
+  }
+
+  fun pseudoChild(selector: DescriptionProvider, style: Css) {
+    addStyle("::${selector.description()}", style)
+  }
+
+  fun not(selector: DescriptionProvider, style: Css) {
+    addStyle(":not(${selector.description()})", style)
+  }
+
+  fun fontFace(face: FontFace.() -> Unit) {
+    fontFace = FontFace()
+
+    face.invoke(fontFace!!)
+  }
+
+  fun import(style: Css) {
+    style(this)
+  }
+
+  fun keyFrames(animationName: String, frames: KeyFrames.() -> Unit) {
+    val frameCss = KeyFrames()
+
+    frames.invoke(frameCss)
+
+    keyFrames[animationName] = frameCss
   }
 }
 

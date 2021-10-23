@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "nl.astraeus"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -52,9 +52,9 @@ testlogger {
     showStandardStreams = true
 }
 
-extra["PUBLISH_GROUP_ID"] = "nl.astraeus"
-extra["PUBLISH_VERSION"] = "1.0.2"
-extra["PUBLISH_ARTIFACT_ID"] = "kotlin-css-generator"
+extra["PUBLISH_GROUP_ID"] = group
+extra["PUBLISH_VERSION"] = version
+extra["PUBLISH_ARTIFACT_ID"] = name
 
 // Stub secrets to let the project sync and build without the publication values set up
 val signingKeyId: String by project

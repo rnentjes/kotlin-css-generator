@@ -58,14 +58,14 @@ class TemplateRowColumn(
 ) : CssProperty(value) {
 
   companion object {
-    val none = GridValue("none")
-    val auto = GridValue("auto")
-    val maxContent = GridValue("max-content")
-    val minContent = GridValue("min-content")
-    val initial = GridValue("initial")
-    val inherit = GridValue("inherit")
+    val none = TemplateRowColumn("none")
+    val auto = TemplateRowColumn("auto")
+    val maxContent = TemplateRowColumn("max-content")
+    val minContent = TemplateRowColumn("min-content")
+    val initial = TemplateRowColumn("initial")
+    val inherit = TemplateRowColumn("inherit")
 
-    fun length(length: Measurement) = GridValue(length.value)
+    fun length(length: Measurement) = TemplateRowColumn(length.value)
   }
 
 }
