@@ -17,7 +17,7 @@ Include in build.gradle.kts:
 
   val commonMain by getting {
     dependencies {
-      api("nl.astraeus:kotlin-css-generator:1.0.1")
+      api("nl.astraeus:kotlin-css-generator:1.0.2")
     }
   }
 ```
