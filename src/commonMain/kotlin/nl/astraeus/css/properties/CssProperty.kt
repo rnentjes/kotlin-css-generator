@@ -10,6 +10,7 @@ open class CssProperty(
 
   override fun css(): String = value
 
+  override fun toString(): String = value
 }
 
 fun text(value: String) = TextProperty(value)

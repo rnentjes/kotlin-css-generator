@@ -9,13 +9,15 @@ enum class MeasurementUoM {
   PC,
   PRC,
   CM,
-  FR
+  FR,
+  VH,
+  VW
 }
 
 open class Measurement(
   value: String,
   val uom: MeasurementUoM = MeasurementUoM.NONE
-) : CssProperty(value) {
+) : CssProperty(value), CalcExpression {
 
   override fun toString(): String = super.value
 
@@ -25,37 +27,14 @@ open class Measurement(
     val inherit = Measurement("inherit")
     val normal = Measurement("normal")
 
-    fun fromString(value:String): Measurement = when {
-        value == "0" -> Measurement("0", MeasurementUoM.PX)
-        value.endsWith("px")  -> Measurement(value.slice(0..(value.length-2)), MeasurementUoM.PX)
-      value.endsWith("rel")  -> Measurement(value.slice(0..(value.length-3)), MeasurementUoM.REL)
-        else -> {
-          TODO("Unable to parse $value")
-        }
+    fun fromString(value: String): Measurement = when {
+      value == "0" -> Measurement("0", MeasurementUoM.PX)
+      value.endsWith("px") -> Measurement(value.slice(0..(value.length - 2)), MeasurementUoM.PX)
+      value.endsWith("rel") -> Measurement(value.slice(0..(value.length - 3)), MeasurementUoM.REL)
+      else -> {
+        TODO("Unable to parse $value")
       }
-
-    fun px(nr: Int) = if (nr == 0) {
-      Measurement(
-        "0",
-        MeasurementUoM.PX
-      )
-    } else {
-      Measurement(
-        "${nr}px",
-        MeasurementUoM.PX
-      )
     }
-
-    fun px(nr: Double) = nr.px
-    fun em(nr: Int) = nr.em
-    fun em(nr: Double) = nr.em
-    fun prc(nr: Int) = nr.prc
-    fun prc(nr: Double) = nr.prc
-    fun pc(nr: Int) = nr.pc
-    fun pc(nr: Double) = nr.pc
-    fun cm(nr: Int) = nr.cm
-    fun cm(nr: Double) = nr.cm
-    fun fr(nr: Int) = nr.fr
   }
 }
 
@@ -100,8 +79,10 @@ val Int.cm: Measurement
   get() = Measurement("${this}cm", MeasurementUoM.CM)
 val Int.fr: Measurement
   get() = Measurement("${this}fr", MeasurementUoM.FR)
-
-fun Int.px(): Measurement = Measurement.px(this)
+val Int.vw: Measurement
+  get() = Measurement("${this}vw", MeasurementUoM.VW)
+val Int.vh: Measurement
+  get() = Measurement("${this}vh", MeasurementUoM.VH)
 
 val Double.px: Measurement
   get() = Measurement("${this}px", MeasurementUoM.PX)
@@ -115,8 +96,12 @@ val Double.pc: Measurement
   get() = Measurement("${this}pc", MeasurementUoM.PC)
 val Double.cm: Measurement
   get() = Measurement("${this}cm", MeasurementUoM.CM)
-
-fun Double.px(): Measurement = Measurement.px(this)
+val Double.fr: Measurement
+  get() = Measurement("${this}fr", MeasurementUoM.FR)
+val Double.vw: Measurement
+  get() = Measurement("${this}vw", MeasurementUoM.VW)
+val Double.vh: Measurement
+  get() = Measurement("${this}vh", MeasurementUoM.VH)
 
 open class LineHeight(value: String) : CssProperty(value) {
   companion object {

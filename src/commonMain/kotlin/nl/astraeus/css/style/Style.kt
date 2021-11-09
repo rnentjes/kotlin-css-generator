@@ -1015,8 +1015,8 @@ open class InlineStyle : CssGenerator() {
   }
 
   fun gridGap(
-    rowGap: Measurement = Measurement.px(0),
-    columnGap: Measurement = Measurement.px(0)
+    rowGap: Measurement = 0.px,
+    columnGap: Measurement = 0.px
   ) {
     props["grid-gap"] = prp(rowGap, columnGap)
   }
