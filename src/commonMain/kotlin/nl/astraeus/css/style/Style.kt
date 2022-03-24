@@ -222,7 +222,7 @@ abstract class CssGenerator {
       if (css.isNotBlank()) {
         val builder = StringBuilder()
 
-        check (allowCommaInSelector || !name.contains(',')) {
+        check (allowCommaInSelector || (name.indexOf(',') == -1)) {
           "Comma is not allowed in selector (option is set in generateCss call)"
         }
 
@@ -859,6 +859,10 @@ open class InlineStyle : CssGenerator() {
   }
 
   fun content(content: Content) {
+    props["content"] = prp(content)
+  }
+
+  fun content(content: String) {
     props["content"] = prp(content)
   }
 
@@ -1610,6 +1614,8 @@ open class Style : InlineStyle() {
     addStyle("::${selector.description()}", style)
   }
 
+  fun not(name: DescriptionProvider): DescriptionProvider = ValueDescriptionProvider(":not(${name.description()})")
+  @Deprecated("Use select(not(...)) instead.")
   fun not(selector: DescriptionProvider, style: Css) {
     addStyle(":not(${selector.description()})", style)
   }

@@ -9,7 +9,6 @@ import kotlin.test.Test
 
 class TestCalcExpression {
 
-
   @Test
   fun testCalcExpression() {
     val a = calc(10.px + 20.px - 5.em)
