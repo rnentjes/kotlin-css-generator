@@ -2,6 +2,8 @@ package nl.astraeus.css
 
 import nl.astraeus.css.properties.BorderStyle
 import nl.astraeus.css.properties.Color
+import nl.astraeus.css.properties.FontStyle
+import nl.astraeus.css.properties.FontWeight
 import nl.astraeus.css.properties.Measurement
 import nl.astraeus.css.properties.em
 import nl.astraeus.css.properties.hsla
@@ -127,5 +129,29 @@ class Examples {
       sortProperties = true,
       combineEqualBlocks = true
     ))
+  }
+
+  @Test
+  fun testFontFace() {
+    val css = style {
+
+      select("*") {
+        fontFace {
+          fontFamily("UbuntuCondensed")
+          fontStyle(FontStyle.normal)
+          fontWeight(FontWeight.normal)
+          //fontDisplay("auto")
+          src("fonts/ubuntu.condensed.ttf")
+        }
+      }
+
+
+    }
+    val cssTxt = css.generateCss(
+      minified = false,
+      sortProperties = true,
+      combineEqualBlocks = true
+    )
+    println(cssTxt)
   }
 }
