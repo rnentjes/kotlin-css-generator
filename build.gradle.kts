@@ -1,13 +1,13 @@
 plugins {
-    kotlin("multiplatform") version "1.8.21"
+    kotlin("multiplatform") version "1.9.22"
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version "1.5.31"
-    id("com.adarshr.test-logger") version "3.0.0"
+    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 group = "nl.astraeus"
-version = "1.0.8-SNAPSHOT"
+version = "1.0.8"
 
 repositories {
     mavenCentral()
@@ -15,7 +15,7 @@ repositories {
 
 kotlin {
     jvm()
-    js(BOTH) {
+    js(IR) {
         browser {
             testTask {
                 // work around, browser test is broken atm
