@@ -1,13 +1,16 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
-    kotlin("multiplatform") version "1.9.22"
+    kotlin("multiplatform") version "2.0.21"
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version "1.5.31"
-    id("com.adarshr.test-logger") version "4.0.0"
 }
 
 group = "nl.astraeus"
-version = "1.0.8"
+version = "1.0.10"
 
 repositories {
     mavenCentral()
@@ -17,19 +20,28 @@ kotlin {
     jvm()
     js(IR) {
         browser {
-            testTask {
+/*            testTask {
                 // work around, browser test is broken atm
                 enabled = false
-            }
+            }*/
+        }
+    }
+
+    wasmJs {
+        //moduleName = project.name
+        browser()
+
+        mavenPublication {
+            groupId = group as String
+            pom { name = "${project.name}-wasm-js" }
         }
     }
 
     sourceSets {
-        val commonMain by getting {}
+        val commonMain by getting
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(kotlin("test"))
             }
         }
         val jvmTest by getting {
@@ -37,16 +49,9 @@ kotlin {
                 implementation(kotlin("test-junit"))
             }
         }
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
+        val jsMain by getting
+        val wasmJsMain by getting
     }
-}
-
-testlogger {
-    showStandardStreams = true
 }
 
 extra["PUBLISH_GROUP_ID"] = group
@@ -75,25 +80,25 @@ publishing {
         maven {
             name = "releases"
             // change to point to your repo, e.g. http://my.org/repo
-            url = uri("https://nexus.astraeus.nl/nexus/content/repositories/releases")
+            setUrl("https://reposilite.astraeus.nl/releases")
             credentials {
-                val nexusUsername: String by project
-                val nexusPassword: String by project
+                val reposiliteUsername: String? by project
+                val reposilitePassword: String? by project
 
-                username = nexusUsername
-                password = nexusPassword
+                username = reposiliteUsername
+                password = reposilitePassword
             }
         }
         maven {
             name = "snapshots"
             // change to point to your repo, e.g. http://my.org/repo
-            url = uri("https://nexus.astraeus.nl/nexus/content/repositories/snapshots")
+            setUrl("https://reposilite.astraeus.nl/snapshots")
             credentials {
-                val nexusUsername: String by project
-                val nexusPassword: String by project
+                val reposiliteUsername: String? by project
+                val reposilitePassword: String? by project
 
-                username = nexusUsername
-                password = nexusPassword
+                username = reposiliteUsername
+                password = reposilitePassword
             }
         }
         maven {
@@ -102,6 +107,18 @@ publishing {
             credentials {
                 username = ossrhUsername
                 password = ossrhPassword
+            }
+        }
+        maven {
+            name = "gitea"
+            setUrl("https://gitea.astraeus.nl/api/packages/rnentjes/maven")
+
+            credentials() {
+                val giteaUsername: kotlin.String? by project
+                val giteaPassword: kotlin.String? by project
+
+                username = giteaUsername
+                password = giteaPassword
             }
         }
     }
@@ -139,4 +156,57 @@ publishing {
 
 signing {
     sign(publishing.publications)
+}
+
+tasks.named<Task>("publishJsPublicationToMavenLocal") {
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishJvmPublicationToMavenLocal") {
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishKotlinMultiplatformPublicationToMavenLocal") {
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishWasmJsPublicationToMavenLocal") {
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishJsPublicationToGiteaRepository") {
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishJvmPublicationToGiteaRepository") {
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishKotlinMultiplatformPublicationToGiteaRepository") {
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+}
+
+tasks.named<Task>("publishWasmJsPublicationToGiteaRepository") {
+    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
+    dependsOn(tasks.named<Task>("signJvmPublication"))
+    dependsOn(tasks.named<Task>("signJsPublication"))
+    dependsOn(tasks.named<Task>("signWasmJsPublication"))
 }
