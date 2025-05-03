@@ -1,11 +1,20 @@
 pluginManagement {
     repositories {
+        google()
         mavenCentral()
-
-        maven { setUrl("https://plugins.gradle.org/m2/") }
+        gradlePluginPortal()
     }
 }
 
-rootProject.name = "kotlin-css-generator"
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 
-//enableFeaturePreview("GRADLE_METADATA")
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
+rootProject.name = "kotlin-css-generator"

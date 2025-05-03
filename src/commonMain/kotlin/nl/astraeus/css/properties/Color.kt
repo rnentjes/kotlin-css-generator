@@ -585,6 +585,8 @@ fun rgb(red: Int, green: Int, blue: Int) = Color("rgb($red, $green, $blue)")
 fun rgba(red: Int, green: Int, blue: Int, alpha: Double) = Color("rgba($red, $green, $blue, ${formatAlpha(alpha)})")
 fun hsl(hue: Int, saturation: Int, lightness: Int) = Color("hsl($hue, $saturation%, $lightness%)")
 fun hsla(hue: Int, saturation: Int, lightness: Int, alpha: Double) = Color("hsla($hue, $saturation%, $lightness%, ${formatAlpha(alpha)})")
+fun oklch(lightness: Int, chroma: Double, hue: Double) = Color("oklch($lightness% $chroma $hue)")
+fun oklch(lightness: Int, chroma: Double, hue: Double, alpha: Double) = Color("oklch($lightness% $chroma $hue / ${formatAlpha(alpha)})")
 fun blackAlpha(alpha: Double) = Color.black.withAlpha(alpha)
 fun whiteAlpha(alpha: Double) = Color.white.withAlpha(alpha)
 

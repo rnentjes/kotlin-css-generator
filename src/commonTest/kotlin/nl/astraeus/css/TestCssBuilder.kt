@@ -187,7 +187,6 @@ class TestCssBuilder {
     println(css2.generateCss())
   }
 
-
   @Test
   fun testOr() {
     val css = style {

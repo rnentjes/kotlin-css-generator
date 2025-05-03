@@ -1,16 +1,17 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    kotlin("multiplatform") version "2.0.21"
-    `maven-publish`
+    kotlin("multiplatform") version "2.1.10"
+    id("com.vanniktech.maven.publish") version "0.31.0"
     signing
-    id("org.jetbrains.dokka") version "1.5.31"
+    id("org.jetbrains.dokka") version "2.0.0"
 }
 
 group = "nl.astraeus"
-version = "1.0.11-SNAPSHOT"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -54,61 +55,13 @@ kotlin {
     }
 }
 
-extra["PUBLISH_GROUP_ID"] = group
-extra["PUBLISH_VERSION"] = version
-extra["PUBLISH_ARTIFACT_ID"] = name
-
-// Stub secrets to let the project sync and build without the publication values set up
-val signingKeyId: String by project
-val signingPassword: String by project
-val signingSecretKeyRingFile: String by project
-val ossrhUsername: String by project
-val ossrhPassword: String by project
-
-extra["signing.keyId"] = signingKeyId
-extra["signing.password"] = signingPassword
-extra["signing.secretKeyRingFile"] = signingSecretKeyRingFile
-extra["ossrhUsername"] = ossrhUsername
-extra["ossrhPassword"] = ossrhPassword
-
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
 }
 
 publishing {
     repositories {
-        maven {
-            name = "releases"
-            // change to point to your repo, e.g. http://my.org/repo
-            setUrl("https://reposilite.astraeus.nl/releases")
-            credentials {
-                val reposiliteUsername: String? by project
-                val reposilitePassword: String? by project
-
-                username = reposiliteUsername
-                password = reposilitePassword
-            }
-        }
-        maven {
-            name = "snapshots"
-            // change to point to your repo, e.g. http://my.org/repo
-            setUrl("https://reposilite.astraeus.nl/snapshots")
-            credentials {
-                val reposiliteUsername: String? by project
-                val reposilitePassword: String? by project
-
-                username = reposiliteUsername
-                password = reposilitePassword
-            }
-        }
-        maven {
-            name = "sonatype"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2")
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
-            }
-        }
+        mavenLocal()
         maven {
             name = "gitea"
             setUrl("https://gitea.astraeus.nl/api/packages/rnentjes/maven")
@@ -122,91 +75,44 @@ publishing {
             }
         }
     }
-
-    // Configure all publications
-    publications.withType<MavenPublication> {
-        // Stub javadoc.jar artifact
-        artifact(javadocJar.get())
-
-        // Provide artifacts information requited by Maven Central
-        pom {
-            name.set("kotlin-css-generator")
-            description.set("Kotlin css generator")
-            url.set("https://github.com/rnentjes/kotlin-css-generator")
-
-            licenses {
-                license {
-                    name.set("MIT")
-                    url.set("https://opensource.org/licenses/MIT")
-                }
-            }
-            developers {
-                developer {
-                    id.set("rnentjes")
-                    name.set("Rien Nentjes")
-                    email.set("info@nentjes.com")
-                }
-            }
-            scm {
-                url.set("https://github.com/rnentjes/kotlin-css-generator")
-            }
-        }
-    }
 }
 
 signing {
     sign(publishing.publications)
 }
 
-tasks.named<Task>("publishJsPublicationToMavenLocal") {
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+
+tasks.withType<AbstractPublishToMaven> {
+    dependsOn(tasks.withType<Sign>())
 }
 
-tasks.named<Task>("publishJvmPublicationToMavenLocal") {
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
-}
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 
-tasks.named<Task>("publishKotlinMultiplatformPublicationToMavenLocal") {
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
-}
+    signAllPublications()
 
-tasks.named<Task>("publishWasmJsPublicationToMavenLocal") {
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
-}
+    coordinates(group.toString(), name, version.toString())
 
-tasks.named<Task>("publishJsPublicationToGiteaRepository") {
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
-}
-
-tasks.named<Task>("publishJvmPublicationToGiteaRepository") {
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
-}
-
-tasks.named<Task>("publishKotlinMultiplatformPublicationToGiteaRepository") {
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
-}
-
-tasks.named<Task>("publishWasmJsPublicationToGiteaRepository") {
-    dependsOn(tasks.named<Task>("signKotlinMultiplatformPublication"))
-    dependsOn(tasks.named<Task>("signJvmPublication"))
-    dependsOn(tasks.named<Task>("signJsPublication"))
-    dependsOn(tasks.named<Task>("signWasmJsPublication"))
+    pom {
+        name = "kotlin-css-generator"
+        description = "Kotlin css generator"
+        inceptionYear = "2020"
+        url = "https://github.com/rnentjes/kotlin-css-generator"
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/MIT"
+            }
+        }
+        developers {
+            developer {
+                id = "rnentjes"
+                name = "Rien Nentjes"
+                email = "info@nentjes.com"
+            }
+        }
+        scm {
+            url = "https://github.com/rnentjes/kotlin-css-generator"
+        }
+    }
 }
